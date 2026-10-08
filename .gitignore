@@ -1,0 +1,39 @@
+# Files and directories created by pub
+.dart_tool/
+.packages
+
+# Pubspec overrides
+pubspec_overrides.yaml
+
+# Agents
+.dart_skills/
+.agents/
+.claude/
+.gemini/
+.cursor/
+.vscode/mcp.json
+.codex/
+.mcp.json
+
+# Serverpod Cloud CLI
+.scloud/
+
+# macOS / editors
+.DS_Store
+*.log
+
+# Local Serverpod App Studio state (machine-specific)
+.appstudio/
+
+# VS Code background task carries the local dev database password.
+# launch.json is safe to share, tasks.json is not.
+.vscode/tasks.json
+
+# docker-compose.yaml embeds local dev/test database passwords.
+# `serverpod start` uses the embedded PostgreSQL instead, so this file is
+# only needed locally and must not be committed.
+apploop_server/docker-compose.yaml
+
+# Android signing keys — never commit these
+*.jks
+*.keystore
