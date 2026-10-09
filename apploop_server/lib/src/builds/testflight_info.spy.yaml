@@ -1,0 +1,14 @@
+# Everything the phone needs to install one build from TestFlight.
+# Not stored — assembled from the build and its store app per request.
+class: TestflightInfo
+fields:
+  ### TestFlight build number.
+  buildNumber: int
+  ### Marketing version, e.g. 1.0.
+  version: String
+  ### Build pipeline status (queued … ready, failed).
+  status: String
+  ### Apple's processing state mirror (e.g. READY, PROCESSING).
+  testflightState: String
+  ### Public TestFlight invite link, empty until the owner sets it.
+  installUrl: String

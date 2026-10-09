@@ -14,6 +14,8 @@ import 'dart:async' as _ida;
 import 'package:apploop_client/src/protocol/builds/app_build.dart' as _i6akcqfa;
 import 'package:apploop_client/src/protocol/builds/build_task.dart'
     as _i0ot5ooz;
+import 'package:apploop_client/src/protocol/builds/testflight_info.dart'
+    as _idjr27zf;
 import 'package:apploop_client/src/protocol/greetings/greeting.dart'
     as _i3hjhujy;
 import 'package:apploop_client/src/protocol/store/store_app.dart' as _iv8bwsvn;
@@ -298,6 +300,16 @@ class EndpointBuild extends _isc.EndpointRef {
         {'id': id},
       );
 
+  /// Everything the phone needs to install one owned build from
+  /// TestFlight. The invite link is empty until the owner sets it on
+  /// the store app.
+  _ida.Future<_idjr27zf.TestflightInfo> testflightInfo(int id) =>
+      caller.callServerEndpoint<_idjr27zf.TestflightInfo>(
+        'build',
+        'testflightInfo',
+        {'id': id},
+      );
+
   /// Re-queues a failed build owned by the caller.
   _ida.Future<_i6akcqfa.AppBuild> retryBuild(int id) =>
       caller.callServerEndpoint<_i6akcqfa.AppBuild>(
@@ -409,6 +421,21 @@ class EndpointStoreApp extends _isc.EndpointRef {
         'getStoreAppForWish',
         {'wishId': wishId},
       );
+
+  /// Sets the public TestFlight invite link for a store app owned by the
+  /// caller (copied from App Store Connect; one link per app). Pass an
+  /// empty link to clear it.
+  _ida.Future<_iv8bwsvn.StoreApp> setTestflightLink(
+    int storeAppId,
+    String link,
+  ) => caller.callServerEndpoint<_iv8bwsvn.StoreApp>(
+    'storeApp',
+    'setTestflightLink',
+    {
+      'storeAppId': storeAppId,
+      'link': link,
+    },
+  );
 }
 
 /// Wishes: what the user told the phone they want built.

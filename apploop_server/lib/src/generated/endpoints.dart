@@ -349,6 +349,25 @@ class Endpoints extends _is.EndpointDispatch {
                     params['id'],
                   ),
         ),
+        'testflightInfo': _is.MethodConnector(
+          name: 'testflightInfo',
+          params: {
+            'id': _is.ParameterDescription(
+              name: 'id',
+              type: _is.getType<int>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['build'] as _iu98uiq9.BuildEndpoint)
+                  .testflightInfo(
+                    session,
+                    params['id'],
+                  ),
+        ),
         'retryBuild': _is.MethodConnector(
           name: 'retryBuild',
           params: {
@@ -540,6 +559,31 @@ class Endpoints extends _is.EndpointDispatch {
                   .getStoreAppForWish(
                     session,
                     params['wishId'],
+                  ),
+        ),
+        'setTestflightLink': _is.MethodConnector(
+          name: 'setTestflightLink',
+          params: {
+            'storeAppId': _is.ParameterDescription(
+              name: 'storeAppId',
+              type: _is.getType<int>(),
+              nullable: false,
+            ),
+            'link': _is.ParameterDescription(
+              name: 'link',
+              type: _is.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['storeApp'] as _iz4r4dl0.StoreAppEndpoint)
+                  .setTestflightLink(
+                    session,
+                    params['storeAppId'],
+                    params['link'],
                   ),
         ),
       },

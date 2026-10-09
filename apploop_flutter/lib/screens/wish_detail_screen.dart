@@ -198,6 +198,8 @@ class _WishDetailScreenState extends State<WishDetailScreen> {
                   icon: const Icon(Icons.build),
                   label: const Text('Request TestFlight build'),
                 ),
+                const SizedBox(height: 12),
+                _TestflightLinkEditor(storeApp: _storeApp!),
               ],
             ],
             if (_error != null) ...[
@@ -245,6 +247,88 @@ class _StatusRow extends StatelessWidget {
             avatar: const Icon(Icons.tag, size: 16),
             label: Text('ASC ${storeApp.ascAppId}'),
           ),
+      ],
+    );
+  }
+}
+
+/// Edits the public TestFlight invite link of a provisioned store app.
+class _TestflightLinkEditor extends StatefulWidget {
+  final StoreApp storeApp;
+
+  const _TestflightLinkEditor({required this.storeApp});
+
+  @override
+  State<_TestflightLinkEditor> createState() => _TestflightLinkEditorState();
+}
+
+class _TestflightLinkEditorState extends State<_TestflightLinkEditor> {
+  late final TextEditingController _controller;
+  bool _saving = false;
+  String? _message;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(text: widget.storeApp.testflightLink);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  Future<void> _save() async {
+    setState(() {
+      _saving = true;
+      _message = null;
+    });
+    try {
+      final updated = await client.storeApp.setTestflightLink(
+        widget.storeApp.id!,
+        _controller.text.trim(),
+      );
+      if (!mounted) return;
+      setState(() {
+        _saving = false;
+        _message = updated.testflightLink.isEmpty
+            ? 'Link cleared.'
+            : 'Link saved.';
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _saving = false;
+        _message = 'Could not save link: $e';
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        TextField(
+          controller: _controller,
+          keyboardType: TextInputType.url,
+          decoration: const InputDecoration(
+            labelText: 'TestFlight invite link',
+            hintText: 'https://testflight.apple.com/join/…',
+            border: OutlineInputBorder(),
+          ),
+        ),
+        const SizedBox(height: 8),
+        OutlinedButton.icon(
+          onPressed: _saving ? null : _save,
+          icon: const Icon(Icons.link),
+          label: const Text('Save invite link'),
+        ),
+        if (_message != null) ...[
+          const SizedBox(height: 4),
+          Text(_message!),
+        ],
       ],
     );
   }

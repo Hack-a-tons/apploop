@@ -101,6 +101,21 @@ class BuildEndpoint extends Endpoint {
     return _ownedBuild(session, id);
   }
 
+  /// Everything the phone needs to install one owned build from
+  /// TestFlight. The invite link is empty until the owner sets it on
+  /// the store app.
+  Future<TestflightInfo> testflightInfo(Session session, int id) async {
+    final build = await _ownedBuild(session, id);
+    final storeApp = (await StoreApp.db.findById(session, build.storeAppId))!;
+    return TestflightInfo(
+      buildNumber: build.buildNumber,
+      version: build.version,
+      status: build.status,
+      testflightState: build.testflightState,
+      installUrl: storeApp.testflightLink,
+    );
+  }
+
   /// Re-queues a failed build owned by the caller.
   Future<AppBuild> retryBuild(Session session, int id) async {
     final build = await _ownedBuild(session, id);

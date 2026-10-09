@@ -79,8 +79,8 @@ void main() {
           'User A wish',
           '',
         );
-        expect(
-          () => endpoints.storeApp.requestApp(
+        await expectLater(
+          endpoints.storeApp.requestApp(
             _asUser(sessionBuilder, _userB),
             wish.id!,
           ),
@@ -118,6 +118,93 @@ void main() {
         final done = await StoreApp.db.findById(builderA.build(), app.id!);
         expect(done?.status, 'failed');
         expect(done?.statusLog, contains('not configured'));
+      },
+    );
+
+    test(
+      'when setting a TestFlight link then it is stored for the owner',
+      () async {
+        await _seedUser(sessionBuilder, _userA);
+        final builderA = _asUser(sessionBuilder, _userA);
+        final wish = await endpoints.wish.createWish(builderA, 'Linked', '');
+        final app = await StoreApp.db.insertRow(
+          builderA.build(),
+          StoreApp(
+            wishId: wish.id!,
+            bundleId: 'com.hurated.apploop.linked',
+            sku: 'com.hurated.apploop.linked',
+            appName: 'Linked',
+          ),
+        );
+
+        const link = 'https://testflight.apple.com/join/AbCdEfGh';
+        final updated = await endpoints.storeApp.setTestflightLink(
+          builderA,
+          app.id!,
+          link,
+        );
+        expect(updated.testflightLink, link);
+
+        final cleared = await endpoints.storeApp.setTestflightLink(
+          builderA,
+          app.id!,
+          '',
+        );
+        expect(cleared.testflightLink, isEmpty);
+      },
+    );
+
+    test(
+      'when setting a non-TestFlight link then it throws',
+      () async {
+        await _seedUser(sessionBuilder, _userA);
+        final builderA = _asUser(sessionBuilder, _userA);
+        final wish = await endpoints.wish.createWish(builderA, 'Linked', '');
+        final app = await StoreApp.db.insertRow(
+          builderA.build(),
+          StoreApp(
+            wishId: wish.id!,
+            bundleId: 'com.hurated.apploop.linked2',
+            sku: 'com.hurated.apploop.linked2',
+            appName: 'Linked',
+          ),
+        );
+
+        await expectLater(
+          endpoints.storeApp.setTestflightLink(
+            builderA,
+            app.id!,
+            'https://example.com/join/xyz',
+          ),
+          throwsArgumentError,
+        );
+      },
+    );
+
+    test(
+      'when setting a link on another users app then it throws',
+      () async {
+        await _seedUser(sessionBuilder, _userA);
+        final builderA = _asUser(sessionBuilder, _userA);
+        final wish = await endpoints.wish.createWish(builderA, 'Linked', '');
+        final app = await StoreApp.db.insertRow(
+          builderA.build(),
+          StoreApp(
+            wishId: wish.id!,
+            bundleId: 'com.hurated.apploop.linked3',
+            sku: 'com.hurated.apploop.linked3',
+            appName: 'Linked',
+          ),
+        );
+
+        await expectLater(
+          endpoints.storeApp.setTestflightLink(
+            _asUser(sessionBuilder, _userB),
+            app.id!,
+            'https://testflight.apple.com/join/AbCdEfGh',
+          ),
+          throwsStateError,
+        );
       },
     );
   });

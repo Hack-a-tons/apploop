@@ -196,6 +196,100 @@ void main() {
         );
       },
     );
+
+    test(
+      'when reading install info then numbers, state and link are returned',
+      () async {
+        final (wishId, storeAppId) = await _seedProvisioned(
+          sessionBuilder,
+          _userA,
+        );
+        final builderA = _asUser(sessionBuilder, _userA);
+        const link = 'https://testflight.apple.com/join/AbCdEfGh';
+        await endpoints.storeApp.setTestflightLink(
+          builderA,
+          storeAppId,
+          link,
+        );
+        final build = await AppBuild.db.insertRow(
+          builderA.build(),
+          AppBuild(
+            wishId: wishId,
+            storeAppId: storeAppId,
+            iteration: 2,
+            buildNumber: 9,
+            status: 'ready',
+            testflightState: 'READY',
+          ),
+        );
+
+        final info = await endpoints.build.testflightInfo(
+          builderA,
+          build.id!,
+        );
+
+        expect(info.buildNumber, 9);
+        expect(info.version, '1.0');
+        expect(info.status, 'ready');
+        expect(info.testflightState, 'READY');
+        expect(info.installUrl, link);
+      },
+    );
+
+    test(
+      'when reading install info without a link then the url is empty',
+      () async {
+        final (wishId, storeAppId) = await _seedProvisioned(
+          sessionBuilder,
+          _userA,
+        );
+        final builderA = _asUser(sessionBuilder, _userA);
+        final build = await AppBuild.db.insertRow(
+          builderA.build(),
+          AppBuild(
+            wishId: wishId,
+            storeAppId: storeAppId,
+            iteration: 1,
+            buildNumber: 1,
+            status: 'building',
+          ),
+        );
+
+        final info = await endpoints.build.testflightInfo(
+          builderA,
+          build.id!,
+        );
+        expect(info.installUrl, isEmpty);
+      },
+    );
+
+    test(
+      'when reading another users install info then it throws',
+      () async {
+        final (wishId, storeAppId) = await _seedProvisioned(
+          sessionBuilder,
+          _userA,
+        );
+        final build = await AppBuild.db.insertRow(
+          _asUser(sessionBuilder, _userA).build(),
+          AppBuild(
+            wishId: wishId,
+            storeAppId: storeAppId,
+            iteration: 1,
+            buildNumber: 1,
+            status: 'ready',
+          ),
+        );
+
+        await expectLater(
+          endpoints.build.testflightInfo(
+            _asUser(sessionBuilder, _userB),
+            build.id!,
+          ),
+          throwsStateError,
+        );
+      },
+    );
   });
 
   withServerpod('Given Builder endpoint', (sessionBuilder, endpoints) {

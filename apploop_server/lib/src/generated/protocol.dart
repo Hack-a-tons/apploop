@@ -22,6 +22,7 @@ import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
     as _iais;
 import 'builds/app_build.dart' as _i1cc7s5u;
 import 'builds/build_task.dart' as _ihkq2rbu;
+import 'builds/testflight_info.dart' as _ib1mtbgz;
 import 'feedback/feedback_comment.dart' as _idgl1o2e;
 import 'feedback/feedback_recording.dart' as _ig7ycgng;
 import 'future_calls_generated_models/provision_app_future_call_provision_app_model.dart'
@@ -31,6 +32,7 @@ import 'store/store_app.dart' as _i9g2qfab;
 import 'wishes/wish.dart' as _ijn0eyds;
 export 'builds/app_build.dart';
 export 'builds/build_task.dart';
+export 'builds/testflight_info.dart';
 export 'feedback/feedback_comment.dart';
 export 'feedback/feedback_recording.dart';
 export 'greetings/greeting.dart';
@@ -505,6 +507,13 @@ class Protocol extends _is.DatabaseSerializationManager {
           dartType: 'String',
           columnDefault: '\'\'',
         ),
+        _isp.ColumnDefinition(
+          name: 'testflightLink',
+          columnType: _isp.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+          columnDefault: '\'\'',
+        ),
       ],
       foreignKeys: [
         _isp.ForeignKeyDefinition(
@@ -586,6 +595,9 @@ class Protocol extends _is.DatabaseSerializationManager {
     if (t == _ihkq2rbu.BuildTask) {
       return _ihkq2rbu.BuildTask.fromJson(data) as T;
     }
+    if (t == _ib1mtbgz.TestflightInfo) {
+      return _ib1mtbgz.TestflightInfo.fromJson(data) as T;
+    }
     if (t == _idgl1o2e.FeedbackComment) {
       return _idgl1o2e.FeedbackComment.fromJson(data) as T;
     }
@@ -610,6 +622,10 @@ class Protocol extends _is.DatabaseSerializationManager {
     }
     if (t == _is.getType<_ihkq2rbu.BuildTask?>()) {
       return (data != null ? _ihkq2rbu.BuildTask.fromJson(data) : null) as T;
+    }
+    if (t == _is.getType<_ib1mtbgz.TestflightInfo?>()) {
+      return (data != null ? _ib1mtbgz.TestflightInfo.fromJson(data) : null)
+          as T;
     }
     if (t == _is.getType<_idgl1o2e.FeedbackComment?>()) {
       return (data != null ? _idgl1o2e.FeedbackComment.fromJson(data) : null)
@@ -663,6 +679,7 @@ class Protocol extends _is.DatabaseSerializationManager {
     return switch (type) {
       _i1cc7s5u.AppBuild => 'AppBuild',
       _ihkq2rbu.BuildTask => 'BuildTask',
+      _ib1mtbgz.TestflightInfo => 'TestflightInfo',
       _idgl1o2e.FeedbackComment => 'FeedbackComment',
       _ig7ycgng.FeedbackRecording => 'FeedbackRecording',
       _ipi9xzeo.ProvisionAppFutureCallProvisionAppModel =>
@@ -688,6 +705,8 @@ class Protocol extends _is.DatabaseSerializationManager {
         return 'AppBuild';
       case _ihkq2rbu.BuildTask():
         return 'BuildTask';
+      case _ib1mtbgz.TestflightInfo():
+        return 'TestflightInfo';
       case _idgl1o2e.FeedbackComment():
         return 'FeedbackComment';
       case _ig7ycgng.FeedbackRecording():
@@ -731,6 +750,9 @@ class Protocol extends _is.DatabaseSerializationManager {
     }
     if (dataClassName == 'BuildTask') {
       return deserialize<_ihkq2rbu.BuildTask>(data['data']);
+    }
+    if (dataClassName == 'TestflightInfo') {
+      return deserialize<_ib1mtbgz.TestflightInfo>(data['data']);
     }
     if (dataClassName == 'FeedbackComment') {
       return deserialize<_idgl1o2e.FeedbackComment>(data['data']);

@@ -68,6 +68,32 @@ class StoreAppEndpoint extends Endpoint {
     );
   }
 
+  /// Sets the public TestFlight invite link for a store app owned by the
+  /// caller (copied from App Store Connect; one link per app). Pass an
+  /// empty link to clear it.
+  Future<StoreApp> setTestflightLink(
+    Session session,
+    int storeAppId,
+    String link,
+  ) async {
+    final app = await _ownedStoreApp(session, storeAppId);
+    final clean = link.trim();
+    if (clean.isNotEmpty) {
+      final uri = Uri.tryParse(clean);
+      if (uri == null ||
+          uri.scheme != 'https' ||
+          uri.host != 'testflight.apple.com') {
+        throw ArgumentError(
+          'Link must be an https://testflight.apple.com invite link.',
+        );
+      }
+    }
+    return StoreApp.db.updateRow(
+      session,
+      app.copyWith(testflightLink: clean),
+    );
+  }
+
   Future<String> _uniqueBundleId(
     Session session,
     String prefix,
@@ -109,5 +135,12 @@ class StoreAppEndpoint extends Endpoint {
       throw StateError('Wish not found.');
     }
     return wish;
+  }
+
+  Future<StoreApp> _ownedStoreApp(Session session, int id) async {
+    final app = await StoreApp.db.findById(session, id);
+    if (app == null) throw StateError('Store app not found.');
+    await _ownedWish(session, app.wishId);
+    return app;
   }
 }

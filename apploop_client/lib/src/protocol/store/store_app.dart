@@ -26,9 +26,11 @@ abstract class StoreApp
     required this.appName,
     String? status,
     String? statusLog,
+    String? testflightLink,
   }) : ascAppId = ascAppId ?? '',
        status = status ?? 'pending',
-       statusLog = statusLog ?? '';
+       statusLog = statusLog ?? '',
+       testflightLink = testflightLink ?? '';
 
   factory StoreApp({
     int? id,
@@ -40,6 +42,7 @@ abstract class StoreApp
     required String appName,
     String? status,
     String? statusLog,
+    String? testflightLink,
   }) = _StoreAppImpl;
 
   factory StoreApp.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -57,6 +60,7 @@ abstract class StoreApp
       appName: jsonSerialization['appName'] as String,
       status: jsonSerialization['status'] as String?,
       statusLog: jsonSerialization['statusLog'] as String?,
+      testflightLink: jsonSerialization['testflightLink'] as String?,
     );
   }
 
@@ -88,6 +92,10 @@ abstract class StoreApp
   /// Append-only log of the provisioning steps.
   String statusLog;
 
+  /// Public TestFlight invite link for this app (one per app, copied from
+  /// App Store Connect by the owner; same for all its builds).
+  String testflightLink;
+
   /// Returns a shallow copy of this [StoreApp]
   /// with some or all fields replaced by the given arguments.
   @_isc.useResult
@@ -101,6 +109,7 @@ abstract class StoreApp
     String? appName,
     String? status,
     String? statusLog,
+    String? testflightLink,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -115,6 +124,7 @@ abstract class StoreApp
       'appName': appName,
       'status': status,
       'statusLog': statusLog,
+      'testflightLink': testflightLink,
     };
   }
 
@@ -131,6 +141,7 @@ abstract class StoreApp
       'appName': appName,
       'status': status,
       'statusLog': statusLog,
+      'testflightLink': testflightLink,
     };
   }
 
@@ -153,6 +164,7 @@ class _StoreAppImpl extends StoreApp {
     required String appName,
     String? status,
     String? statusLog,
+    String? testflightLink,
   }) : super._(
          id: id,
          wishId: wishId,
@@ -163,6 +175,7 @@ class _StoreAppImpl extends StoreApp {
          appName: appName,
          status: status,
          statusLog: statusLog,
+         testflightLink: testflightLink,
        );
 
   /// Returns a shallow copy of this [StoreApp]
@@ -179,6 +192,7 @@ class _StoreAppImpl extends StoreApp {
     String? appName,
     String? status,
     String? statusLog,
+    String? testflightLink,
   }) {
     return StoreApp(
       id: id is int? ? id : this.id,
@@ -190,6 +204,7 @@ class _StoreAppImpl extends StoreApp {
       appName: appName ?? this.appName,
       status: status ?? this.status,
       statusLog: statusLog ?? this.statusLog,
+      testflightLink: testflightLink ?? this.testflightLink,
     );
   }
 }

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:apploop_client/apploop_client.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../client.dart';
 
@@ -17,6 +18,7 @@ class BuildDetailScreen extends StatefulWidget {
 
 class _BuildDetailScreenState extends State<BuildDetailScreen> {
   AppBuild? _build;
+  TestflightInfo? _info;
   bool _loading = true;
   bool _working = false;
   String? _error;
@@ -46,9 +48,11 @@ class _BuildDetailScreenState extends State<BuildDetailScreen> {
   Future<void> _refresh() async {
     try {
       final build = await client.build.getBuild(widget.buildId);
+      final info = await client.build.testflightInfo(widget.buildId);
       if (!mounted) return;
       setState(() {
         _build = build;
+        _info = info;
         _loading = false;
         _error = null;
       });
@@ -63,8 +67,7 @@ class _BuildDetailScreenState extends State<BuildDetailScreen> {
   }
 
   void _updatePolling() {
-    final active =
-        _build != null && _activeStatuses.contains(_build!.status);
+    final active = _build != null && _activeStatuses.contains(_build!.status);
     if (active && _pollTimer == null) {
       _pollTimer = Timer.periodic(
         const Duration(seconds: 5),
@@ -98,6 +101,19 @@ class _BuildDetailScreenState extends State<BuildDetailScreen> {
     }
   }
 
+  Future<void> _install() async {
+    final url = _info?.installUrl ?? '';
+    if (url.isEmpty) return;
+    final uri = Uri.tryParse(url);
+    if (uri == null) return;
+    final ok = await launchUrl(uri, mode: LaunchMode.externalApplication);
+    if (!ok && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Could not open TestFlight.')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -118,8 +134,25 @@ class _BuildDetailScreenState extends State<BuildDetailScreen> {
                     ),
                     const SizedBox(height: 8),
                     Text('Status: ${_build!.status}'),
-                    if (_build!.testflightState.isNotEmpty)
-                      Text('TestFlight: ${_build!.testflightState}'),
+                    if (_info != null && _info!.testflightState.isNotEmpty)
+                      Chip(
+                        avatar: const Icon(Icons.flight_takeoff, size: 16),
+                        label: Text('TestFlight: ${_info!.testflightState}'),
+                      ),
+                    if (_info != null && _info!.installUrl.isNotEmpty) ...[
+                      const SizedBox(height: 12),
+                      FilledButton.icon(
+                        onPressed: _install,
+                        icon: const Icon(Icons.download),
+                        label: const Text('Install in TestFlight'),
+                      ),
+                    ] else if (_build!.status == 'ready') ...[
+                      const SizedBox(height: 12),
+                      const Text(
+                        'No TestFlight invite link yet — set it on the '
+                        'store app to install this build.',
+                      ),
+                    ],
                     const SizedBox(height: 12),
                     Container(
                       width: double.infinity,

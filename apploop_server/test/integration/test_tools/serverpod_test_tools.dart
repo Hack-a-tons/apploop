@@ -17,6 +17,8 @@ import 'package:apploop_server/src/generated/builds/app_build.dart'
     as _ia2egj0z;
 import 'package:apploop_server/src/generated/builds/build_task.dart'
     as _i118q4yp;
+import 'package:apploop_server/src/generated/builds/testflight_info.dart'
+    as _iteistin;
 import 'package:apploop_server/src/generated/future_calls.dart' as _i1nmt0s2;
 import 'package:apploop_server/src/generated/future_calls_generated_models/provision_app_future_call_provision_app_model.dart'
     as _iiej2ygv;
@@ -671,6 +673,37 @@ class _BuildEndpoint {
     });
   }
 
+  _ida.Future<_iteistin.TestflightInfo> testflightInfo(
+    _ist.TestSessionBuilder sessionBuilder,
+    int id,
+  ) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'build',
+            method: 'testflightInfo',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'build',
+          methodName: 'testflightInfo',
+          parameters: _ist.testObjectToJson({'id': id}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _ida.Future<_iteistin.TestflightInfo>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
   _ida.Future<_ia2egj0z.AppBuild> retryBuild(
     _ist.TestSessionBuilder sessionBuilder,
     int id,
@@ -932,6 +965,41 @@ class _StoreAppEndpoint {
                   _localCallContext.arguments,
                 )
                 as _ida.Future<_iootfkcp.StoreApp?>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _ida.Future<_iootfkcp.StoreApp> setTestflightLink(
+    _ist.TestSessionBuilder sessionBuilder,
+    int storeAppId,
+    String link,
+  ) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'storeApp',
+            method: 'setTestflightLink',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'storeApp',
+          methodName: 'setTestflightLink',
+          parameters: _ist.testObjectToJson({
+            'storeAppId': storeAppId,
+            'link': link,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _ida.Future<_iootfkcp.StoreApp>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();

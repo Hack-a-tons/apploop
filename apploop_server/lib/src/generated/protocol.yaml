@@ -14,6 +14,7 @@ build:
   - getBuildsForWish:
   - listMyBuilds:
   - getBuild:
+  - testflightInfo:
   - retryBuild:
 builder:
   - claimBuildTask:
@@ -24,6 +25,7 @@ greeting:
 storeApp:
   - requestApp:
   - getStoreAppForWish:
+  - setTestflightLink:
 wish:
   - createWish:
   - listMyWishes:
