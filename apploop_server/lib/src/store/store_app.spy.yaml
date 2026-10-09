@@ -1,0 +1,21 @@
+# One App Store Connect app record per wish.
+class: StoreApp
+table: store_app
+fields:
+  ### The wish this store app was provisioned for.
+  wish: AppWish?, relation(onDelete=Cascade)
+  ### Full bundle id: <prefix>.<slug>. Unique across the team.
+  bundleId: String, unique
+  ### App Store Connect app id, once the app record exists.
+  ascAppId: String, default=''
+  ### SKU used when creating the app record.
+  sku: String
+  ### Display name used when creating the app record.
+  appName: String
+  ### Provisioning status: pending, creating, ready, failed.
+  status: String, default='pending'
+  ### Append-only log of the provisioning steps.
+  statusLog: String, default=''
+indexes:
+  store_app_wish_idx:
+    fields: wishId

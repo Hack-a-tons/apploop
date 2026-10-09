@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:serverpod_auth_idp_flutter/serverpod_auth_idp_flutter.dart';
 
 import 'client.dart';
-import 'screens/greetings_screen.dart';
+import 'screens/coming_soon_screen.dart';
+import 'screens/sign_in_screen.dart';
+import 'screens/wishes_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -25,37 +28,72 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Serverpod Demo',
+      title: 'AppLoop',
       theme: _buildTheme(Brightness.light),
       darkTheme: _buildTheme(Brightness.dark),
       themeMode: ThemeMode.system,
-      home: const MyHomePage(title: 'Serverpod Example'),
+      home: SignInScreen(
+        child: AppLoopHome(
+          onSignOut: () async {
+            await client.auth.signOutDevice();
+          },
+        ),
+      ),
     );
   }
 }
 
-class MyHomePage extends StatelessWidget {
-  const MyHomePage({super.key, required this.title});
+/// Bottom-navigation shell of the AppLoop loop. Stages that land in later
+/// features show honest placeholders (see PLAN.md).
+class AppLoopHome extends StatefulWidget {
+  final Future<void> Function() onSignOut;
 
-  final String title;
+  const AppLoopHome({super.key, required this.onSignOut});
+
+  @override
+  State<AppLoopHome> createState() => _AppLoopHomeState();
+}
+
+class _AppLoopHomeState extends State<AppLoopHome> {
+  int _index = 0;
+
+  static const _tabs = [
+    (icon: Icons.lightbulb, label: 'Wishes'),
+    (icon: Icons.build, label: 'Builds'),
+    (icon: Icons.rate_review, label: 'Feedback'),
+    (icon: Icons.ios_share, label: 'Export'),
+  ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(title)),
-      body: const GreetingsScreen(),
-      // To test authentication in this example app, uncomment the line below
-      // and comment out the line above. This wraps the GreetingsScreen with a
-      // SignInScreen, which automatically shows a sign-in UI when the user is
-      // not authenticated and displays the GreetingsScreen once they sign in.
-      //
-      // body: SignInScreen(
-      //   child: GreetingsScreen(
-      //     onSignOut: () async {
-      //       await client.auth.signOutDevice();
-      //     },
-      //   ),
-      // ),
+      appBar: AppBar(
+        title: const Text('AppLoop'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            tooltip: 'Sign out',
+            onPressed: () => widget.onSignOut(),
+          ),
+        ],
+      ),
+      body: IndexedStack(
+        index: _index,
+        children: const [
+          WishesScreen(),
+          ComingSoonScreen(title: 'Builds', feature: 'F4 (builder worker)'),
+          ComingSoonScreen(title: 'Feedback', feature: 'F7 (feedback)'),
+          ComingSoonScreen(title: 'Export', feature: 'F8 (export)'),
+        ],
+      ),
+      bottomNavigationBar: NavigationBar(
+        selectedIndex: _index,
+        onDestinationSelected: (index) => setState(() => _index = index),
+        destinations: [
+          for (final tab in _tabs)
+            NavigationDestination(icon: Icon(tab.icon), label: tab.label),
+        ],
+      ),
     );
   }
 }

@@ -1,0 +1,24 @@
+# One TestFlight build per loop iteration.
+class: AppBuild
+table: app_build
+fields:
+  ### The wish this build belongs to.
+  wish: AppWish?, relation(onDelete=Cascade)
+  ### The store app this build is uploaded to.
+  storeApp: StoreApp?, relation(onDelete=Cascade)
+  ### Loop iteration this build was produced for.
+  iteration: int
+  ### TestFlight build number (latest on TestFlight + 1).
+  buildNumber: int, default=0
+  ### Marketing version, e.g. 1.0.
+  version: String, default='1.0'
+  ### Pipeline status: queued, claimed, generating, building, uploading,
+  ### processing, ready, failed.
+  status: String, default='queued'
+  ### Append-only log of the build pipeline.
+  statusLog: String, default=''
+  ### Mirror of Apple's external build state (e.g. ready, processing).
+  testflightState: String, default=''
+indexes:
+  app_build_wish_idx:
+    fields: wishId

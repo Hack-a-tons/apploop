@@ -10,6 +10,7 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:apploop_server/src/generated/future_calls.dart' as _i1nmt0s2;
 import 'package:serverpod/serverpod.dart' as _is;
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
     as _iacs;
@@ -18,6 +19,9 @@ import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
 import '../auth/email_idp_endpoint.dart' as _iuc1hd5t;
 import '../auth/jwt_refresh_endpoint.dart' as _inwq3ztq;
 import '../greetings/greeting_endpoint.dart' as _il624ik7;
+import '../store/store_app_endpoint.dart' as _iz4r4dl0;
+import '../wishes/wish_endpoint.dart' as _i8qgaqst;
+export 'future_calls.dart' show ServerpodFutureCallsGetter;
 
 class Endpoints extends _is.EndpointDispatch {
   @override
@@ -39,6 +43,18 @@ class Endpoints extends _is.EndpointDispatch {
         ..initialize(
           server,
           'greeting',
+          null,
+        ),
+      'storeApp': _iz4r4dl0.StoreAppEndpoint()
+        ..initialize(
+          server,
+          'storeApp',
+          null,
+        ),
+      'wish': _i8qgaqst.WishEndpoint()
+        ..initialize(
+          server,
+          'wish',
           null,
         ),
     };
@@ -273,9 +289,187 @@ class Endpoints extends _is.EndpointDispatch {
         ),
       },
     );
-    modules['serverpod_auth_idp'] = _iais.Endpoints()
-      ..initializeEndpoints(server);
+    connectors['storeApp'] = _is.EndpointConnector(
+      name: 'storeApp',
+      endpoint: endpoints['storeApp']!,
+      methodConnectors: {
+        'requestApp': _is.MethodConnector(
+          name: 'requestApp',
+          params: {
+            'wishId': _is.ParameterDescription(
+              name: 'wishId',
+              type: _is.getType<int>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['storeApp'] as _iz4r4dl0.StoreAppEndpoint)
+                  .requestApp(
+                    session,
+                    params['wishId'],
+                  ),
+        ),
+        'getStoreAppForWish': _is.MethodConnector(
+          name: 'getStoreAppForWish',
+          params: {
+            'wishId': _is.ParameterDescription(
+              name: 'wishId',
+              type: _is.getType<int>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['storeApp'] as _iz4r4dl0.StoreAppEndpoint)
+                  .getStoreAppForWish(
+                    session,
+                    params['wishId'],
+                  ),
+        ),
+      },
+    );
+    connectors['wish'] = _is.EndpointConnector(
+      name: 'wish',
+      endpoint: endpoints['wish']!,
+      methodConnectors: {
+        'createWish': _is.MethodConnector(
+          name: 'createWish',
+          params: {
+            'title': _is.ParameterDescription(
+              name: 'title',
+              type: _is.getType<String>(),
+              nullable: false,
+            ),
+            'description': _is.ParameterDescription(
+              name: 'description',
+              type: _is.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['wish'] as _i8qgaqst.WishEndpoint).createWish(
+                    session,
+                    params['title'],
+                    params['description'],
+                  ),
+        ),
+        'listMyWishes': _is.MethodConnector(
+          name: 'listMyWishes',
+          params: {},
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['wish'] as _i8qgaqst.WishEndpoint)
+                  .listMyWishes(session),
+        ),
+        'updateWish': _is.MethodConnector(
+          name: 'updateWish',
+          params: {
+            'id': _is.ParameterDescription(
+              name: 'id',
+              type: _is.getType<int>(),
+              nullable: false,
+            ),
+            'title': _is.ParameterDescription(
+              name: 'title',
+              type: _is.getType<String>(),
+              nullable: false,
+            ),
+            'description': _is.ParameterDescription(
+              name: 'description',
+              type: _is.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['wish'] as _i8qgaqst.WishEndpoint).updateWish(
+                    session,
+                    params['id'],
+                    params['title'],
+                    params['description'],
+                  ),
+        ),
+        'deleteWish': _is.MethodConnector(
+          name: 'deleteWish',
+          params: {
+            'id': _is.ParameterDescription(
+              name: 'id',
+              type: _is.getType<int>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['wish'] as _i8qgaqst.WishEndpoint).deleteWish(
+                    session,
+                    params['id'],
+                  ),
+        ),
+        'markSatisfied': _is.MethodConnector(
+          name: 'markSatisfied',
+          params: {
+            'id': _is.ParameterDescription(
+              name: 'id',
+              type: _is.getType<int>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['wish'] as _i8qgaqst.WishEndpoint).markSatisfied(
+                    session,
+                    params['id'],
+                  ),
+        ),
+        'reopenWish': _is.MethodConnector(
+          name: 'reopenWish',
+          params: {
+            'id': _is.ParameterDescription(
+              name: 'id',
+              type: _is.getType<int>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['wish'] as _i8qgaqst.WishEndpoint).reopenWish(
+                    session,
+                    params['id'],
+                  ),
+        ),
+      },
+    );
     modules['serverpod_auth_core'] = _iacs.Endpoints()
       ..initializeEndpoints(server);
+    modules['serverpod_auth_idp'] = _iais.Endpoints()
+      ..initializeEndpoints(server);
+  }
+
+  @override
+  _is.FutureCallDispatch? get futureCalls {
+    return _i1nmt0s2.FutureCalls();
   }
 }

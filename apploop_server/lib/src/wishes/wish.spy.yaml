@@ -1,0 +1,18 @@
+# An app wish: what the user told the phone they want built.
+class: AppWish
+table: app_wish
+fields:
+  ### The authenticated user who owns this wish.
+  authUser: module:serverpod_auth_core:AuthUser?, relation(onDelete=Cascade)
+  ### Short title of the wished app.
+  title: String
+  ### Free-text description of the wished app.
+  descriptionText: String, default=''
+  ### Lifecycle status: draft, provisioning, provisioned, building,
+  ### testing, satisfied, exported.
+  status: String, default='draft'
+  ### Current loop iteration (bumped on every requested build).
+  currentIteration: int, default=0
+indexes:
+  app_wish_owner_idx:
+    fields: authUserId

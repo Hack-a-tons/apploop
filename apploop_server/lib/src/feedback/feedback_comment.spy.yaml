@@ -1,0 +1,28 @@
+# One editable comment per feedback issue. Created from an extracted
+# issue or manually by the tester (voice or keyboard).
+class: FeedbackComment
+table: feedback_comment
+fields:
+  ### The recording this comment belongs to.
+  recording: FeedbackRecording?, relation(onDelete=Cascade)
+  ### The authenticated user who owns this comment.
+  authUser: module:serverpod_auth_core:AuthUser?, relation(onDelete=Cascade)
+  ### Short summary of the issue.
+  title: String
+  ### Editable comment text.
+  text: String, default=''
+  ### Storage path of an attached audio note.
+  audioPath: String, default=''
+  ### Storage path of an attached screenshot.
+  screenshotPath: String, default=''
+  ### high, medium or low.
+  severity: String, default='medium'
+  ### Timestamps in the recording this comment refers to.
+  timestamps: String, default=''
+  ### How the comment was created: voice, keyboard or extracted.
+  origin: String, default='keyboard'
+  ### Whether the issue is resolved.
+  resolved: bool, default=false
+indexes:
+  feedback_comment_recording_idx:
+    fields: recordingId

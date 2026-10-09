@@ -13,6 +13,8 @@
 import 'dart:async' as _ida;
 import 'package:apploop_client/src/protocol/greetings/greeting.dart'
     as _i3hjhujy;
+import 'package:apploop_client/src/protocol/store/store_app.dart' as _iv8bwsvn;
+import 'package:apploop_client/src/protocol/wishes/wish.dart' as _isssl1tb;
 import 'package:http/http.dart' as _i85jenna;
 import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
     as _iacc;
@@ -264,15 +266,115 @@ class EndpointGreeting extends _isc.EndpointRef {
       );
 }
 
+/// Store apps: one App Store Connect app record per wish.
+///
+/// Provisioning itself runs in [ProvisionAppFutureCall]; this endpoint only
+/// records the intent (idempotently) and schedules the work.
+/// {@category Endpoint}
+class EndpointStoreApp extends _isc.EndpointRef {
+  EndpointStoreApp(_isc.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'storeApp';
+
+  /// Requests (or reuses) the store app for a wish owned by the caller.
+  /// A failed provisioning is reset to pending and rescheduled.
+  _ida.Future<_iv8bwsvn.StoreApp> requestApp(int wishId) =>
+      caller.callServerEndpoint<_iv8bwsvn.StoreApp>(
+        'storeApp',
+        'requestApp',
+        {'wishId': wishId},
+      );
+
+  /// Returns the store app for a wish owned by the caller, if any.
+  _ida.Future<_iv8bwsvn.StoreApp?> getStoreAppForWish(int wishId) =>
+      caller.callServerEndpoint<_iv8bwsvn.StoreApp?>(
+        'storeApp',
+        'getStoreAppForWish',
+        {'wishId': wishId},
+      );
+}
+
+/// Wishes: what the user told the phone they want built.
+///
+/// Every method requires a signed-in user and only ever touches rows
+/// owned by that user (matched via the auth user id).
+/// {@category Endpoint}
+class EndpointWish extends _isc.EndpointRef {
+  EndpointWish(_isc.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'wish';
+
+  /// Creates a wish from a spoken or typed title and description.
+  _ida.Future<_isssl1tb.AppWish> createWish(
+    String title,
+    String description,
+  ) => caller.callServerEndpoint<_isssl1tb.AppWish>(
+    'wish',
+    'createWish',
+    {
+      'title': title,
+      'description': description,
+    },
+  );
+
+  /// Lists the signed-in user's wishes, newest first.
+  _ida.Future<List<_isssl1tb.AppWish>> listMyWishes() =>
+      caller.callServerEndpoint<List<_isssl1tb.AppWish>>(
+        'wish',
+        'listMyWishes',
+        {},
+      );
+
+  /// Replaces title and description of a wish owned by the caller.
+  _ida.Future<_isssl1tb.AppWish> updateWish(
+    int id,
+    String title,
+    String description,
+  ) => caller.callServerEndpoint<_isssl1tb.AppWish>(
+    'wish',
+    'updateWish',
+    {
+      'id': id,
+      'title': title,
+      'description': description,
+    },
+  );
+
+  /// Deletes a wish owned by the caller (builds and feedback cascade).
+  _ida.Future<void> deleteWish(int id) => caller.callServerEndpoint<void>(
+    'wish',
+    'deleteWish',
+    {'id': id},
+  );
+
+  /// Freezes the loop: the wish is done, ready for export.
+  _ida.Future<_isssl1tb.AppWish> markSatisfied(int id) =>
+      caller.callServerEndpoint<_isssl1tb.AppWish>(
+        'wish',
+        'markSatisfied',
+        {'id': id},
+      );
+
+  /// Reopens the loop after it was marked satisfied.
+  _ida.Future<_isssl1tb.AppWish> reopenWish(int id) =>
+      caller.callServerEndpoint<_isssl1tb.AppWish>(
+        'wish',
+        'reopenWish',
+        {'id': id},
+      );
+}
+
 class Modules {
   Modules(Client client) {
-    serverpod_auth_idp = _iaic.Caller(client);
     serverpod_auth_core = _iacc.Caller(client);
+    serverpod_auth_idp = _iaic.Caller(client);
   }
 
-  late final _iaic.Caller serverpod_auth_idp;
-
   late final _iacc.Caller serverpod_auth_core;
+
+  late final _iaic.Caller serverpod_auth_idp;
 }
 
 class Client extends _isc.ServerpodClientShared {
@@ -305,6 +407,8 @@ class Client extends _isc.ServerpodClientShared {
     emailIdp = EndpointEmailIdp(this);
     jwtRefresh = EndpointJwtRefresh(this);
     greeting = EndpointGreeting(this);
+    storeApp = EndpointStoreApp(this);
+    wish = EndpointWish(this);
     modules = Modules(this);
   }
 
@@ -314,6 +418,10 @@ class Client extends _isc.ServerpodClientShared {
 
   late final EndpointGreeting greeting;
 
+  late final EndpointStoreApp storeApp;
+
+  late final EndpointWish wish;
+
   late final Modules modules;
 
   @override
@@ -321,11 +429,13 @@ class Client extends _isc.ServerpodClientShared {
     'emailIdp': emailIdp,
     'jwtRefresh': jwtRefresh,
     'greeting': greeting,
+    'storeApp': storeApp,
+    'wish': wish,
   };
 
   @override
   Map<String, _isc.ModuleEndpointCaller> get moduleLookup => {
-    'serverpod_auth_idp': modules.serverpod_auth_idp,
     'serverpod_auth_core': modules.serverpod_auth_core,
+    'serverpod_auth_idp': modules.serverpod_auth_idp,
   };
 }

@@ -11,13 +11,24 @@
 // ignore_for_file: dead_code, unnecessary_type_check
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:apploop_client/src/protocol/wishes/wish.dart' as _isssl1tb;
 import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
     as _iacc;
 import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart'
     as _iaic;
 import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'builds/app_build.dart' as _i1cc7s5u;
+import 'feedback/feedback_comment.dart' as _idgl1o2e;
+import 'feedback/feedback_recording.dart' as _ig7ycgng;
 import 'greetings/greeting.dart' as _izw8z7ou;
+import 'store/store_app.dart' as _i9g2qfab;
+import 'wishes/wish.dart' as _ijn0eyds;
+export 'builds/app_build.dart';
+export 'feedback/feedback_comment.dart';
+export 'feedback/feedback_recording.dart';
 export 'greetings/greeting.dart';
+export 'store/store_app.dart';
+export 'wishes/wish.dart';
 export 'client.dart';
 
 class Protocol extends _isc.SerializationManager {
@@ -54,24 +65,67 @@ class Protocol extends _isc.SerializationManager {
       }
     }
 
+    if (t == _i1cc7s5u.AppBuild) {
+      return _i1cc7s5u.AppBuild.fromJson(data) as T;
+    }
+    if (t == _idgl1o2e.FeedbackComment) {
+      return _idgl1o2e.FeedbackComment.fromJson(data) as T;
+    }
+    if (t == _ig7ycgng.FeedbackRecording) {
+      return _ig7ycgng.FeedbackRecording.fromJson(data) as T;
+    }
     if (t == _izw8z7ou.Greeting) {
       return _izw8z7ou.Greeting.fromJson(data) as T;
+    }
+    if (t == _i9g2qfab.StoreApp) {
+      return _i9g2qfab.StoreApp.fromJson(data) as T;
+    }
+    if (t == _ijn0eyds.AppWish) {
+      return _ijn0eyds.AppWish.fromJson(data) as T;
+    }
+    if (t == _isc.getType<_i1cc7s5u.AppBuild?>()) {
+      return (data != null ? _i1cc7s5u.AppBuild.fromJson(data) : null) as T;
+    }
+    if (t == _isc.getType<_idgl1o2e.FeedbackComment?>()) {
+      return (data != null ? _idgl1o2e.FeedbackComment.fromJson(data) : null)
+          as T;
+    }
+    if (t == _isc.getType<_ig7ycgng.FeedbackRecording?>()) {
+      return (data != null ? _ig7ycgng.FeedbackRecording.fromJson(data) : null)
+          as T;
     }
     if (t == _isc.getType<_izw8z7ou.Greeting?>()) {
       return (data != null ? _izw8z7ou.Greeting.fromJson(data) : null) as T;
     }
-    try {
-      return _iaic.Protocol().deserialize<T>(data, t);
-    } on _isc.DeserializationTypeNotFoundException catch (_) {}
+    if (t == _isc.getType<_i9g2qfab.StoreApp?>()) {
+      return (data != null ? _i9g2qfab.StoreApp.fromJson(data) : null) as T;
+    }
+    if (t == _isc.getType<_ijn0eyds.AppWish?>()) {
+      return (data != null ? _ijn0eyds.AppWish.fromJson(data) : null) as T;
+    }
+    if (t == List<_isssl1tb.AppWish>) {
+      return (data as List)
+              .map((e) => deserialize<_isssl1tb.AppWish>(e))
+              .toList()
+          as T;
+    }
     try {
       return _iacc.Protocol().deserialize<T>(data, t);
+    } on _isc.DeserializationTypeNotFoundException catch (_) {}
+    try {
+      return _iaic.Protocol().deserialize<T>(data, t);
     } on _isc.DeserializationTypeNotFoundException catch (_) {}
     return super.deserialize<T>(data, t);
   }
 
   static String? getClassNameForType(Type type) {
     return switch (type) {
+      _i1cc7s5u.AppBuild => 'AppBuild',
+      _idgl1o2e.FeedbackComment => 'FeedbackComment',
+      _ig7ycgng.FeedbackRecording => 'FeedbackRecording',
       _izw8z7ou.Greeting => 'Greeting',
+      _i9g2qfab.StoreApp => 'StoreApp',
+      _ijn0eyds.AppWish => 'AppWish',
       _ => null,
     };
   }
@@ -86,20 +140,30 @@ class Protocol extends _isc.SerializationManager {
     }
 
     switch (data) {
+      case _i1cc7s5u.AppBuild():
+        return 'AppBuild';
+      case _idgl1o2e.FeedbackComment():
+        return 'FeedbackComment';
+      case _ig7ycgng.FeedbackRecording():
+        return 'FeedbackRecording';
       case _izw8z7ou.Greeting():
         return 'Greeting';
-    }
-    className = _iaic.Protocol().getClassNameForObject(data);
-    if (className != null) {
-      return className.contains('.')
-          ? className
-          : 'serverpod_auth_idp.$className';
+      case _i9g2qfab.StoreApp():
+        return 'StoreApp';
+      case _ijn0eyds.AppWish():
+        return 'AppWish';
     }
     className = _iacc.Protocol().getClassNameForObject(data);
     if (className != null) {
       return className.contains('.')
           ? className
           : 'serverpod_auth_core.$className';
+    }
+    className = _iaic.Protocol().getClassNameForObject(data);
+    if (className != null) {
+      return className.contains('.')
+          ? className
+          : 'serverpod_auth_idp.$className';
     }
     return null;
   }
@@ -110,23 +174,38 @@ class Protocol extends _isc.SerializationManager {
     if (dataClassName is! String) {
       return super.deserializeByClassName(data);
     }
+    if (dataClassName == 'AppBuild') {
+      return deserialize<_i1cc7s5u.AppBuild>(data['data']);
+    }
+    if (dataClassName == 'FeedbackComment') {
+      return deserialize<_idgl1o2e.FeedbackComment>(data['data']);
+    }
+    if (dataClassName == 'FeedbackRecording') {
+      return deserialize<_ig7ycgng.FeedbackRecording>(data['data']);
+    }
     if (dataClassName == 'Greeting') {
       return deserialize<_izw8z7ou.Greeting>(data['data']);
     }
-    if (dataClassName.startsWith('serverpod_auth_idp.')) {
-      data['className'] = dataClassName.substring(19);
-      return _iaic.Protocol().deserializeByClassName(data);
+    if (dataClassName == 'StoreApp') {
+      return deserialize<_i9g2qfab.StoreApp>(data['data']);
+    }
+    if (dataClassName == 'AppWish') {
+      return deserialize<_ijn0eyds.AppWish>(data['data']);
     }
     if (dataClassName.startsWith('serverpod_auth_core.')) {
       data['className'] = dataClassName.substring(20);
       return _iacc.Protocol().deserializeByClassName(data);
     }
+    if (dataClassName.startsWith('serverpod_auth_idp.')) {
+      data['className'] = dataClassName.substring(19);
+      return _iaic.Protocol().deserializeByClassName(data);
+    }
     return super.deserializeByClassName(data);
   }
 
   void _registerHostProtocols() {
-    _iaic.Protocol().registerHostProtocol('apploop', this);
     _iacc.Protocol().registerHostProtocol('apploop', this);
+    _iaic.Protocol().registerHostProtocol('apploop', this);
   }
 
   @override
@@ -142,10 +221,10 @@ class Protocol extends _isc.SerializationManager {
       return null;
     }
     try {
-      return _iaic.Protocol().mapRecordToJson(record);
+      return _iacc.Protocol().mapRecordToJson(record);
     } catch (_) {}
     try {
-      return _iacc.Protocol().mapRecordToJson(record);
+      return _iaic.Protocol().mapRecordToJson(record);
     } catch (_) {}
     throw Exception('Unsupported record type ${record.runtimeType}');
   }

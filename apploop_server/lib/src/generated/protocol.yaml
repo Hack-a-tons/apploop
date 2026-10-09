@@ -11,3 +11,13 @@ jwtRefresh:
   - refreshAccessToken:
 greeting:
   - hello:
+storeApp:
+  - requestApp:
+  - getStoreAppForWish:
+wish:
+  - createWish:
+  - listMyWishes:
+  - updateWish:
+  - deleteWish:
+  - markSatisfied:
+  - reopenWish:

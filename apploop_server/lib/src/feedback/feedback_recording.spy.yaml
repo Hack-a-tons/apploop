@@ -1,0 +1,20 @@
+# A tester's screen recording with spoken comments for one build.
+class: FeedbackRecording
+table: feedback_recording
+fields:
+  ### The build that was tested in this recording.
+  build: AppBuild?, relation(onDelete=Cascade)
+  ### The authenticated user who recorded and owns this recording.
+  authUser: module:serverpod_auth_core:AuthUser?, relation(onDelete=Cascade)
+  ### Storage path of the uploaded video file.
+  videoPath: String, default=''
+  ### Verbatim transcript of the spoken comments.
+  transcript: String, default=''
+  ### Extracted issues as JSON list
+  ### [{title, severity, timestamps, quote, fix}].
+  issuesJson: String, default='[]'
+  ### Processing status: uploaded, processing, ready, failed.
+  status: String, default='uploaded'
+indexes:
+  feedback_recording_build_idx:
+    fields: buildId
