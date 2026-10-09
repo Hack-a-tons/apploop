@@ -41,7 +41,7 @@ void main() {
 
         final app = await endpoints.storeApp.requestApp(builderA, wish.id!);
 
-        expect(app.bundleId, 'com.hurated.apploop.plant-identifier');
+        expect(app.bundleId, 'com.hurated.apploop.plant_identifier');
         expect(app.sku, app.bundleId);
         expect(app.status, isIn(['pending', 'creating', 'failed']));
         expect(app.ascAppId, isEmpty);
@@ -104,8 +104,8 @@ void main() {
           builderA.build(),
           StoreApp(
             wishId: wish.id!,
-            bundleId: 'com.hurated.apploop.no-creds-app',
-            sku: 'com.hurated.apploop.no-creds-app',
+            bundleId: 'com.hurated.apploop.no_creds_app',
+            sku: 'com.hurated.apploop.no_creds_app',
             appName: 'No Creds App',
           ),
         );
