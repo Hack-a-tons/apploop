@@ -44,8 +44,8 @@ Future<int> _seedBuild(TestSessionBuilder sessionBuilder, String userId) async {
     session,
     StoreApp(
       wishId: wish.id!,
-      bundleId: 'com.hurated.apploop.testable',
-      sku: 'com.hurated.apploop.testable',
+      bundleId: 'com.hurated.loop.testable',
+      sku: 'com.hurated.loop.testable',
       appName: 'Testable',
       status: 'ready',
     ),

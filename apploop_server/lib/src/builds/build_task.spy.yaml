@@ -10,5 +10,5 @@ fields:
   wishDescription: String
   ### Exact bundle id registered in App Store Connect.
   bundleId: String
-  ### Bundle id prefix (organization), e.g. com.hurated.apploop.
+  ### Bundle id prefix (organization), e.g. com.hurated.loop.
   organization: String

@@ -40,6 +40,21 @@ class ProvisionAppFutureCall extends FutureCall {
 
     final api = AppStoreConnectApi(creds);
     try {
+      // The id is unique in our database already, but App Store Connect
+      // may hold the same id from elsewhere (manual creation, another
+      // system). Bump the suffix until it is free there too — no user
+      // interaction needed.
+      final freeId = await uniqueBundleId(api, app!.bundleId);
+      if (freeId != app!.bundleId) {
+        await update(
+          'creating',
+          'Bundle id ${app!.bundleId} is taken in App Store Connect, '
+              'using $freeId.',
+        );
+        app = app!.copyWith(bundleId: freeId, sku: freeId);
+        await StoreApp.db.updateRow(session, app!);
+      }
+
       var bundleResourceId = await api.findBundleId(app!.bundleId);
       if (bundleResourceId == null) {
         await update('creating', 'Registering bundle id ${app!.bundleId}.');

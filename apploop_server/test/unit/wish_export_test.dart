@@ -25,8 +25,8 @@ void main() {
         storeApp: StoreApp(
           id: 1,
           wishId: 1,
-          bundleId: 'com.hurated.apploop.plant',
-          sku: 'com.hurated.apploop.plant',
+          bundleId: 'com.hurated.loop.plant',
+          sku: 'com.hurated.loop.plant',
           appName: 'Plant Identifier',
           status: 'ready',
           ascAppId: '123',
@@ -81,7 +81,7 @@ void main() {
 
       expect(markdown, contains('# Plant Identifier'));
       expect(markdown, contains('Point and learn'));
-      expect(markdown, contains('com.hurated.apploop.plant'));
+      expect(markdown, contains('com.hurated.loop.plant'));
       expect(markdown, contains('https://testflight.apple.com/join/AbC'));
       expect(markdown, contains('Iteration 1 — build 3'));
       expect(markdown, contains('it crashed on save'));

@@ -41,7 +41,7 @@ void main() {
 
         final app = await endpoints.storeApp.requestApp(builderA, wish.id!);
 
-        expect(app.bundleId, 'com.hurated.apploop.plant_identifier');
+        expect(app.bundleId, 'com.hurated.loop.plant_identifier');
         expect(app.sku, app.bundleId);
         expect(app.status, isIn(['pending', 'creating', 'failed']));
         expect(app.ascAppId, isEmpty);
@@ -104,8 +104,8 @@ void main() {
           builderA.build(),
           StoreApp(
             wishId: wish.id!,
-            bundleId: 'com.hurated.apploop.no_creds_app',
-            sku: 'com.hurated.apploop.no_creds_app',
+            bundleId: 'com.hurated.loop.no_creds_app',
+            sku: 'com.hurated.loop.no_creds_app',
             appName: 'No Creds App',
           ),
         );
@@ -131,8 +131,8 @@ void main() {
           builderA.build(),
           StoreApp(
             wishId: wish.id!,
-            bundleId: 'com.hurated.apploop.linked',
-            sku: 'com.hurated.apploop.linked',
+            bundleId: 'com.hurated.loop.linked',
+            sku: 'com.hurated.loop.linked',
             appName: 'Linked',
           ),
         );
@@ -164,8 +164,8 @@ void main() {
           builderA.build(),
           StoreApp(
             wishId: wish.id!,
-            bundleId: 'com.hurated.apploop.linked2',
-            sku: 'com.hurated.apploop.linked2',
+            bundleId: 'com.hurated.loop.linked2',
+            sku: 'com.hurated.loop.linked2',
             appName: 'Linked',
           ),
         );
@@ -191,8 +191,8 @@ void main() {
           builderA.build(),
           StoreApp(
             wishId: wish.id!,
-            bundleId: 'com.hurated.apploop.linked3',
-            sku: 'com.hurated.apploop.linked3',
+            bundleId: 'com.hurated.loop.linked3',
+            sku: 'com.hurated.loop.linked3',
             appName: 'Linked',
           ),
         );

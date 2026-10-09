@@ -36,7 +36,7 @@ class StoreAppEndpoint extends Endpoint {
     }
 
     final prefix = session.passwords['appLoopBundlePrefix'] ?? '';
-    final bundlePrefix = prefix.isEmpty ? 'com.hurated.apploop' : prefix;
+    final bundlePrefix = prefix.isEmpty ? 'com.hurated.loop' : prefix;
     final bundleId = await _uniqueBundleId(
       session,
       bundlePrefix,

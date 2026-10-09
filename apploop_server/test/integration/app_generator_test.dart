@@ -17,13 +17,13 @@ void main() {
           final app = await AppGenerator().generate(
             targetDir: Directory('${dir.path}/tap_counter'),
             slug: 'tap_counter',
-            organization: 'com.hurated.apploop',
+            organization: 'com.hurated.loop',
             title: 'Tap Counter',
             description: 'Tap fast and count',
           );
 
           expect(app.module, WishModule.counter);
-          expect(app.bundleId, 'com.hurated.apploop.tap_counter');
+          expect(app.bundleId, 'com.hurated.loop.tap_counter');
           for (final file in app.files) {
             expect(
               File('${app.directory.path}/$file').existsSync(),
@@ -52,7 +52,7 @@ void main() {
           expect(
             pbxproj,
             contains(
-              'PRODUCT_BUNDLE_IDENTIFIER = com.hurated.apploop.tap_counter;',
+              'PRODUCT_BUNDLE_IDENTIFIER = com.hurated.loop.tap_counter;',
             ),
           );
           expect(pbxproj, isNot(contains('tapCounter')));
@@ -72,7 +72,7 @@ void main() {
             final app = await AppGenerator().generate(
               targetDir: Directory('${dir.path}/$name'),
               slug: 'my_list',
-              organization: 'com.hurated.apploop',
+              organization: 'com.hurated.loop',
               title: 'My List',
               description: 'A list of things',
             );

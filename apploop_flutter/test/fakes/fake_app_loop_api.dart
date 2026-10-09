@@ -26,8 +26,8 @@ AppBuild testBuild({int id = 1, String status = 'ready'}) => AppBuild(
 StoreApp testStoreApp({String status = 'ready'}) => StoreApp(
   id: 1,
   wishId: 1,
-  bundleId: 'com.hurated.apploop.test',
-  sku: 'com.hurated.apploop.test',
+  bundleId: 'com.hurated.loop.test',
+  sku: 'com.hurated.loop.test',
   appName: 'Test',
   status: status,
 );

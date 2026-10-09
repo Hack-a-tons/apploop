@@ -128,7 +128,7 @@ class BuilderEndpoint extends Endpoint {
       wishTitle: wish.title,
       wishDescription: wish.descriptionText,
       bundleId: storeApp.bundleId,
-      organization: prefix.isEmpty ? 'com.hurated.apploop' : prefix,
+      organization: prefix.isEmpty ? 'com.hurated.loop' : prefix,
     );
   }
 }

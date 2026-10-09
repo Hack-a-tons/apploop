@@ -138,7 +138,7 @@ PlantIdentify pipeline already uses:
 `ASC_KEY_ID` / `ASC_ISSUER_ID` / `ASC_PRIVATE_KEY` (App Store Connect
 API key content), `ASC_KEY_FILE` (builder-Mac `.p8` fallback),
 `APPLE_ID` / `APPLE_TEAM_ID` / `APPLE_TEAM_NAME` (signing),
-`APPLOOP_BUNDLE_PREFIX` (e.g. `com.hurated.apploop`),
+`APPLOOP_BUNDLE_PREFIX` (e.g. `com.hurated.loop`),
 `TESTFLIGHT_INTERNAL_GROUP` (tester group). Transcriber credentials
 (`VERTEX_AI_*`) live only on the builder Mac. The phone app never sees
 any of these — only build numbers, states and install links.

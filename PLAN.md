@@ -65,7 +65,7 @@ does. Nothing below is a value — only names.
 | `ASC_KEY_ID` / `ASC_ISSUER_ID` / `ASC_PRIVATE_KEY` | App Store Connect API key (same key as PlantIdentify; `.p8` content, never a file in the repo) |
 | `ASC_KEY_FILE` | Builder-Mac fallback path to the `.p8` (same pattern as PlantIdentify's `~/Documents/...` fallback) |
 | `APPLE_ID` / `APPLE_TEAM_ID` / `APPLE_TEAM_NAME` | Apple ID, team id, team name for signing |
-| `APPLOOP_BUNDLE_PREFIX` | e.g. `com.hurated.apploop` — per-wish apps become `<prefix>.<slug>` |
+| `APPLOOP_BUNDLE_PREFIX` | e.g. `com.hurated.loop` — per-wish apps become `<prefix>.<slug>` |
 | `TESTFLIGHT_INTERNAL_GROUP` | Internal group name testers install from (default `AppLoop Internal`) |
 | `VERTEX_AI_*` / `GOOGLE_APPLICATION_CREDENTIALS` | Only on the builder Mac, only if LLM issue extraction (F7) is enabled |
 

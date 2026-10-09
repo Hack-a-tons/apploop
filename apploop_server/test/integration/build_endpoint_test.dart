@@ -53,8 +53,8 @@ Future<(int, int)> _seedProvisioned(
     session,
     StoreApp(
       wishId: wish.id!,
-      bundleId: 'com.hurated.apploop.buildable',
-      sku: 'com.hurated.apploop.buildable',
+      bundleId: 'com.hurated.loop.buildable',
+      sku: 'com.hurated.loop.buildable',
       appName: 'Buildable',
       status: 'ready',
       ascAppId: 'test-asc-app-id',
@@ -75,8 +75,8 @@ void main() {
           builderA.build(),
           StoreApp(
             wishId: wish.id!,
-            bundleId: 'com.hurated.apploop.no_creds',
-            sku: 'com.hurated.apploop.no_creds',
+            bundleId: 'com.hurated.loop.no_creds',
+            sku: 'com.hurated.loop.no_creds',
             appName: 'No Creds',
             status: 'ready',
           ),
@@ -327,7 +327,7 @@ void main() {
         expect(task, isNotNull);
         expect(task!.build.buildNumber, 12);
         expect(task.wishTitle, 'Buildable');
-        expect(task.bundleId, 'com.hurated.apploop.buildable');
+        expect(task.bundleId, 'com.hurated.loop.buildable');
         expect(task.organization, isNotEmpty);
 
         // Second claim finds nothing (already claimed, heartbeat fresh).

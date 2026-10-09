@@ -62,16 +62,19 @@ class AppStoreConnectApi {
 
   final AppleCredentials _creds;
   final http.Client _http;
+  final String? _fixedToken;
 
   String? _token;
   DateTime? _tokenExpiry;
 
-  AppStoreConnectApi(this._creds, [http.Client? httpClient])
-    : _http = httpClient ?? http.Client();
+  AppStoreConnectApi(this._creds, [http.Client? httpClient, String? fixedToken])
+    : _http = httpClient ?? http.Client(),
+      _fixedToken = fixedToken;
 
   /// ES256-signed JWT for the API (same shape as fastlane's api_key).
   /// Tokens live 15 minutes; cached until a minute before expiry.
   String _bearerToken() {
+    if (_fixedToken != null) return _fixedToken;
     final now = DateTime.now().toUtc();
     if (_token != null &&
         _tokenExpiry != null &&
@@ -267,4 +270,24 @@ class AppStoreConnectApi {
   }
 
   void close() => _http.close();
+}
+
+/// Bumps `-2`, `-3`, … until neither the bundle id nor an app with it
+/// exists in App Store Connect. A base that already ends in `-N`
+/// continues counting from `N + 1`.
+Future<String> uniqueBundleId(AppStoreConnectApi api, String base) async {
+  var stem = base;
+  var counter = 2;
+  final suffix = RegExp(r'-(\d+)$').firstMatch(base);
+  if (suffix != null) {
+    stem = base.substring(0, suffix.start);
+    counter = int.parse(suffix.group(1)!) + 1;
+  }
+  var candidate = base;
+  while (await api.findBundleId(candidate) != null ||
+      await api.findAppByBundleId(candidate) != null) {
+    candidate = '$stem-$counter';
+    counter++;
+  }
+  return candidate;
 }

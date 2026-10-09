@@ -56,7 +56,7 @@ abstract class BuildTask
   /// Exact bundle id registered in App Store Connect.
   String bundleId;
 
-  /// Bundle id prefix (organization), e.g. com.hurated.apploop.
+  /// Bundle id prefix (organization), e.g. com.hurated.loop.
   String organization;
 
   /// Returns a shallow copy of this [BuildTask]

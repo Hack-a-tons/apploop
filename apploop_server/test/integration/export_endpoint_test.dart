@@ -47,8 +47,8 @@ void main() {
           session,
           StoreApp(
             wishId: wish.id!,
-            bundleId: 'com.hurated.apploop.looped',
-            sku: 'com.hurated.apploop.looped',
+            bundleId: 'com.hurated.loop.looped',
+            sku: 'com.hurated.loop.looped',
             appName: 'Looped App',
             status: 'ready',
             ascAppId: '999',
@@ -96,7 +96,7 @@ void main() {
         );
 
         expect(markdown, contains('# Looped App'));
-        expect(markdown, contains('com.hurated.apploop.looped'));
+        expect(markdown, contains('com.hurated.loop.looped'));
         expect(markdown, contains('https://testflight.apple.com/join/LoOpEd'));
         expect(markdown, contains('Iteration 2 — build 5'));
         expect(markdown, contains('second round is smooth'));
