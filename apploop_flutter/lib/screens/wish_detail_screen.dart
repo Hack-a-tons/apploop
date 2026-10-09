@@ -4,6 +4,10 @@ import 'package:apploop_client/apploop_client.dart';
 import 'package:flutter/material.dart';
 
 import '../client.dart';
+import 'build_detail_screen.dart';
+
+/// F2: wish detail with TestFlight provisioning status.
+/// F4: request a TestFlight build once the app is provisioned.
 
 /// F2: wish detail with TestFlight provisioning status.
 /// Polls while the store app is being provisioned.
@@ -92,6 +96,29 @@ class _WishDetailScreenState extends State<WishDetailScreen> {
     }
   }
 
+  Future<void> _requestBuild() async {
+    setState(() {
+      _working = true;
+      _error = null;
+    });
+    try {
+      final build = await client.build.requestBuild(widget.wish.id!);
+      if (!mounted) return;
+      setState(() => _working = false);
+      await Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => BuildDetailScreen(buildId: build.id!),
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _working = false;
+        _error = 'Build request failed: $e';
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -162,6 +189,14 @@ class _WishDetailScreenState extends State<WishDetailScreen> {
                   onPressed: _working ? null : _provision,
                   icon: const Icon(Icons.refresh),
                   label: const Text('Retry provisioning'),
+                ),
+              ],
+              if (_storeApp!.status == 'ready') ...[
+                const SizedBox(height: 12),
+                FilledButton.icon(
+                  onPressed: _working ? null : _requestBuild,
+                  icon: const Icon(Icons.build),
+                  label: const Text('Request TestFlight build'),
                 ),
               ],
             ],

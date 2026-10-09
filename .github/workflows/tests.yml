@@ -13,6 +13,9 @@ jobs:
       VERSION: '4.0.4'
       SERVERPOD_PASSWORD_database: 'dzkRlbEYV5W_xx4tv6op00JapUk_wvgX'
       SERVERPOD_PASSWORD_redis: 't8N1v-yrSok2I565hJWSTwXspE9EAWhu'
+      # Test-only builder worker token (CI mirror of passwords.yaml test
+      # section; guards nothing of value).
+      SERVERPOD_PASSWORD_builderToken: '91c5a5f2e87028b59992961e1f8b432e5aced874e3f2c70bd0c562713f37cf85'
 
     steps:
       - uses: actions/checkout@v4

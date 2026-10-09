@@ -1,0 +1,14 @@
+# Work order handed to the Mac builder worker. Not stored — assembled
+# from the build, its wish and its store app at claim time.
+class: BuildTask
+fields:
+  ### The build to produce.
+  build: AppBuild
+  ### Wish title (app name source).
+  wishTitle: String
+  ### Wish description (generation source).
+  wishDescription: String
+  ### Exact bundle id registered in App Store Connect.
+  bundleId: String
+  ### Bundle id prefix (organization), e.g. com.hurated.apploop.
+  organization: String

@@ -9,6 +9,16 @@ emailIdp:
   - hasAccount:
 jwtRefresh:
   - refreshAccessToken:
+build:
+  - requestBuild:
+  - getBuildsForWish:
+  - listMyBuilds:
+  - getBuild:
+  - retryBuild:
+builder:
+  - claimBuildTask:
+  - postBuildProgress:
+  - completeBuild:
 greeting:
   - hello:
 storeApp:

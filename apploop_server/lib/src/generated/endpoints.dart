@@ -18,6 +18,8 @@ import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
     as _iais;
 import '../auth/email_idp_endpoint.dart' as _iuc1hd5t;
 import '../auth/jwt_refresh_endpoint.dart' as _inwq3ztq;
+import '../builds/build_endpoint.dart' as _iu98uiq9;
+import '../builds/builder_endpoint.dart' as _infkm04t;
 import '../greetings/greeting_endpoint.dart' as _il624ik7;
 import '../store/store_app_endpoint.dart' as _iz4r4dl0;
 import '../wishes/wish_endpoint.dart' as _i8qgaqst;
@@ -37,6 +39,18 @@ class Endpoints extends _is.EndpointDispatch {
         ..initialize(
           server,
           'jwtRefresh',
+          null,
+        ),
+      'build': _iu98uiq9.BuildEndpoint()
+        ..initialize(
+          server,
+          'build',
+          null,
+        ),
+      'builder': _infkm04t.BuilderEndpoint()
+        ..initialize(
+          server,
+          'builder',
           null,
         ),
       'greeting': _il624ik7.GreetingEndpoint()
@@ -261,6 +275,203 @@ class Endpoints extends _is.EndpointDispatch {
                         session,
                         refreshToken: params['refreshToken'],
                       ),
+        ),
+      },
+    );
+    connectors['build'] = _is.EndpointConnector(
+      name: 'build',
+      endpoint: endpoints['build']!,
+      methodConnectors: {
+        'requestBuild': _is.MethodConnector(
+          name: 'requestBuild',
+          params: {
+            'wishId': _is.ParameterDescription(
+              name: 'wishId',
+              type: _is.getType<int>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['build'] as _iu98uiq9.BuildEndpoint).requestBuild(
+                    session,
+                    params['wishId'],
+                  ),
+        ),
+        'getBuildsForWish': _is.MethodConnector(
+          name: 'getBuildsForWish',
+          params: {
+            'wishId': _is.ParameterDescription(
+              name: 'wishId',
+              type: _is.getType<int>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['build'] as _iu98uiq9.BuildEndpoint)
+                  .getBuildsForWish(
+                    session,
+                    params['wishId'],
+                  ),
+        ),
+        'listMyBuilds': _is.MethodConnector(
+          name: 'listMyBuilds',
+          params: {},
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['build'] as _iu98uiq9.BuildEndpoint)
+                  .listMyBuilds(session),
+        ),
+        'getBuild': _is.MethodConnector(
+          name: 'getBuild',
+          params: {
+            'id': _is.ParameterDescription(
+              name: 'id',
+              type: _is.getType<int>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['build'] as _iu98uiq9.BuildEndpoint).getBuild(
+                    session,
+                    params['id'],
+                  ),
+        ),
+        'retryBuild': _is.MethodConnector(
+          name: 'retryBuild',
+          params: {
+            'id': _is.ParameterDescription(
+              name: 'id',
+              type: _is.getType<int>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['build'] as _iu98uiq9.BuildEndpoint).retryBuild(
+                    session,
+                    params['id'],
+                  ),
+        ),
+      },
+    );
+    connectors['builder'] = _is.EndpointConnector(
+      name: 'builder',
+      endpoint: endpoints['builder']!,
+      methodConnectors: {
+        'claimBuildTask': _is.MethodConnector(
+          name: 'claimBuildTask',
+          params: {
+            'builderToken': _is.ParameterDescription(
+              name: 'builderToken',
+              type: _is.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['builder'] as _infkm04t.BuilderEndpoint)
+                  .claimBuildTask(
+                    session,
+                    params['builderToken'],
+                  ),
+        ),
+        'postBuildProgress': _is.MethodConnector(
+          name: 'postBuildProgress',
+          params: {
+            'builderToken': _is.ParameterDescription(
+              name: 'builderToken',
+              type: _is.getType<String>(),
+              nullable: false,
+            ),
+            'buildId': _is.ParameterDescription(
+              name: 'buildId',
+              type: _is.getType<int>(),
+              nullable: false,
+            ),
+            'status': _is.ParameterDescription(
+              name: 'status',
+              type: _is.getType<String>(),
+              nullable: false,
+            ),
+            'logAppend': _is.ParameterDescription(
+              name: 'logAppend',
+              type: _is.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['builder'] as _infkm04t.BuilderEndpoint)
+                  .postBuildProgress(
+                    session,
+                    params['builderToken'],
+                    params['buildId'],
+                    params['status'],
+                    params['logAppend'],
+                  ),
+        ),
+        'completeBuild': _is.MethodConnector(
+          name: 'completeBuild',
+          params: {
+            'builderToken': _is.ParameterDescription(
+              name: 'builderToken',
+              type: _is.getType<String>(),
+              nullable: false,
+            ),
+            'buildId': _is.ParameterDescription(
+              name: 'buildId',
+              type: _is.getType<int>(),
+              nullable: false,
+            ),
+            'succeeded': _is.ParameterDescription(
+              name: 'succeeded',
+              type: _is.getType<bool>(),
+              nullable: false,
+            ),
+            'testflightState': _is.ParameterDescription(
+              name: 'testflightState',
+              type: _is.getType<String>(),
+              nullable: false,
+            ),
+            'logAppend': _is.ParameterDescription(
+              name: 'logAppend',
+              type: _is.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['builder'] as _infkm04t.BuilderEndpoint)
+                  .completeBuild(
+                    session,
+                    params['builderToken'],
+                    params['buildId'],
+                    params['succeeded'],
+                    params['testflightState'],
+                    params['logAppend'],
+                  ),
         ),
       },
     );

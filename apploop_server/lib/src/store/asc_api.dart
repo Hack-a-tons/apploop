@@ -32,6 +32,27 @@ class AppleCredentials {
   }
 }
 
+/// One TestFlight build as reported by App Store Connect.
+class TestflightBuildInfo {
+  /// Marketing version, e.g. 1.0.
+  final String marketingVersion;
+
+  /// Build number (CFBundleVersion), e.g. 42.
+  final int buildNumber;
+
+  /// Apple's processing state, e.g. PROCESSING, READY.
+  final String processingState;
+
+  final bool expired;
+
+  const TestflightBuildInfo({
+    required this.marketingVersion,
+    required this.buildNumber,
+    required this.processingState,
+    required this.expired,
+  });
+}
+
 /// Minimal App Store Connect API client: just enough to register a bundle
 /// id and create an app record. Docs:
 /// https://developer.apple.com/documentation/appstoreconnectapi
@@ -188,6 +209,61 @@ class AppStoreConnectApi {
     }
     return (jsonDecode(response.body) as Map<String, dynamic>)['data']['id']
         as String;
+  }
+
+  /// TestFlight builds of an app (all versions), newest upload first.
+  Future<List<TestflightBuildInfo>> listBuilds(String appId) async {
+    final url = Uri.parse(
+      '$_base/v1/apps/$appId/builds'
+      '?include=preReleaseVersion&limit=200',
+    );
+    final response = await _get(url);
+    if (response.statusCode != 200) {
+      throw StateError(
+        'App Store Connect error ${response.statusCode}: ${response.body}',
+      );
+    }
+    final body = jsonDecode(response.body) as Map<String, dynamic>;
+    final versions = <String, String>{};
+    for (final item in (body['included'] as List? ?? [])) {
+      final entry = item as Map<String, dynamic>;
+      if (entry['type'] == 'preReleaseVersions') {
+        versions[entry['id'] as String] =
+            (entry['attributes'] as Map<String, dynamic>)['version'] as String;
+      }
+    }
+    final builds = <TestflightBuildInfo>[];
+    for (final item in (body['data'] as List? ?? [])) {
+      final entry = item as Map<String, dynamic>;
+      final attributes = entry['attributes'] as Map<String, dynamic>;
+      final versionId =
+          (entry['relationships']
+                  as Map<
+                    String,
+                    dynamic
+                  >?)?['preReleaseVersion']?['data']?['id']
+              as String?;
+      builds.add(
+        TestflightBuildInfo(
+          marketingVersion: versions[versionId] ?? '',
+          buildNumber:
+              int.tryParse(attributes['version'] as String? ?? '') ?? 0,
+          processingState: attributes['processingState'] as String? ?? '',
+          expired: attributes['expired'] as bool? ?? false,
+        ),
+      );
+    }
+    return builds;
+  }
+
+  /// Next free TestFlight build number: max across all versions + 1.
+  Future<int> nextBuildNumber(String appId) async {
+    final builds = await listBuilds(appId);
+    var latest = 0;
+    for (final build in builds) {
+      if (build.buildNumber > latest) latest = build.buildNumber;
+    }
+    return latest + 1;
   }
 
   void close() => _http.close();

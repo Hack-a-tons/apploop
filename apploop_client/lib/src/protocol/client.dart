@@ -11,6 +11,9 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _ida;
+import 'package:apploop_client/src/protocol/builds/app_build.dart' as _i6akcqfa;
+import 'package:apploop_client/src/protocol/builds/build_task.dart'
+    as _i0ot5ooz;
 import 'package:apploop_client/src/protocol/greetings/greeting.dart'
     as _i3hjhujy;
 import 'package:apploop_client/src/protocol/store/store_app.dart' as _iv8bwsvn;
@@ -248,6 +251,119 @@ class EndpointJwtRefresh extends _iacc.EndpointRefreshJwtTokens {
       );
 }
 
+/// Builds: one TestFlight build per loop iteration.
+///
+/// All methods require a signed-in user and only touch rows owned by
+/// that user. The actual build work happens on the Mac builder worker
+/// via [BuilderEndpoint]; this endpoint records intent and reports state.
+/// {@category Endpoint}
+class EndpointBuild extends _isc.EndpointRef {
+  EndpointBuild(_isc.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'build';
+
+  /// Requests a build for a wish owned by the caller. The wish must
+  /// already have a provisioned (`ready`) store app, and Apple
+  /// credentials must be configured. Assigns the next free TestFlight
+  /// build number (latest on TestFlight and local rows + 1).
+  _ida.Future<_i6akcqfa.AppBuild> requestBuild(int wishId) =>
+      caller.callServerEndpoint<_i6akcqfa.AppBuild>(
+        'build',
+        'requestBuild',
+        {'wishId': wishId},
+      );
+
+  /// Lists the caller's builds for one wish, newest first.
+  _ida.Future<List<_i6akcqfa.AppBuild>> getBuildsForWish(int wishId) =>
+      caller.callServerEndpoint<List<_i6akcqfa.AppBuild>>(
+        'build',
+        'getBuildsForWish',
+        {'wishId': wishId},
+      );
+
+  /// Lists all of the caller's builds across wishes, newest first.
+  _ida.Future<List<_i6akcqfa.AppBuild>> listMyBuilds() =>
+      caller.callServerEndpoint<List<_i6akcqfa.AppBuild>>(
+        'build',
+        'listMyBuilds',
+        {},
+      );
+
+  /// Loads one build owned by the caller.
+  _ida.Future<_i6akcqfa.AppBuild> getBuild(int id) =>
+      caller.callServerEndpoint<_i6akcqfa.AppBuild>(
+        'build',
+        'getBuild',
+        {'id': id},
+      );
+
+  /// Re-queues a failed build owned by the caller.
+  _ida.Future<_i6akcqfa.AppBuild> retryBuild(int id) =>
+      caller.callServerEndpoint<_i6akcqfa.AppBuild>(
+        'build',
+        'retryBuild',
+        {'id': id},
+      );
+}
+
+/// Worker API for the Mac builder. No user login — every method takes
+/// the shared builder token, which must match `builderToken` in
+/// `config/passwords.yaml` (or the `SERVERPOD_PASSWORD_builderToken`
+/// environment variable in CI). Fails closed when unconfigured.
+/// {@category Endpoint}
+class EndpointBuilder extends _isc.EndpointRef {
+  EndpointBuilder(_isc.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'builder';
+
+  /// Claims the next queued build (or a stale claim with no heartbeat
+  /// for 30 minutes) and returns the work order, or null when idle.
+  _ida.Future<_i0ot5ooz.BuildTask?> claimBuildTask(String builderToken) =>
+      caller.callServerEndpoint<_i0ot5ooz.BuildTask?>(
+        'builder',
+        'claimBuildTask',
+        {'builderToken': builderToken},
+      );
+
+  /// Appends to the build log, updates status and heartbeat.
+  _ida.Future<void> postBuildProgress(
+    String builderToken,
+    int buildId,
+    String status,
+    String logAppend,
+  ) => caller.callServerEndpoint<void>(
+    'builder',
+    'postBuildProgress',
+    {
+      'builderToken': builderToken,
+      'buildId': buildId,
+      'status': status,
+      'logAppend': logAppend,
+    },
+  );
+
+  /// Finishes a build as `ready` (on TestFlight) or `failed`.
+  _ida.Future<void> completeBuild(
+    String builderToken,
+    int buildId,
+    bool succeeded,
+    String testflightState,
+    String logAppend,
+  ) => caller.callServerEndpoint<void>(
+    'builder',
+    'completeBuild',
+    {
+      'builderToken': builderToken,
+      'buildId': buildId,
+      'succeeded': succeeded,
+      'testflightState': testflightState,
+      'logAppend': logAppend,
+    },
+  );
+}
+
 /// This is an example endpoint that returns a greeting message through
 /// its [hello] method.
 /// {@category Endpoint}
@@ -406,6 +522,8 @@ class Client extends _isc.ServerpodClientShared {
        ) {
     emailIdp = EndpointEmailIdp(this);
     jwtRefresh = EndpointJwtRefresh(this);
+    build = EndpointBuild(this);
+    builder = EndpointBuilder(this);
     greeting = EndpointGreeting(this);
     storeApp = EndpointStoreApp(this);
     wish = EndpointWish(this);
@@ -415,6 +533,10 @@ class Client extends _isc.ServerpodClientShared {
   late final EndpointEmailIdp emailIdp;
 
   late final EndpointJwtRefresh jwtRefresh;
+
+  late final EndpointBuild build;
+
+  late final EndpointBuilder builder;
 
   late final EndpointGreeting greeting;
 
@@ -428,6 +550,8 @@ class Client extends _isc.ServerpodClientShared {
   Map<String, _isc.EndpointRef> get endpointRefLookup => {
     'emailIdp': emailIdp,
     'jwtRefresh': jwtRefresh,
+    'build': build,
+    'builder': builder,
     'greeting': greeting,
     'storeApp': storeApp,
     'wish': wish,

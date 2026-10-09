@@ -113,6 +113,15 @@ The API runs on `http://localhost:8080`, the web server on
 cd apploop_server && dart run tool/mac_builder.dart
 ```
 
+The worker polls the server every 10 seconds, claims queued builds and
+runs generate → fastlane beta → TestFlight upload → processing watch,
+streaming the log back to the phone. It needs: `BUILDER_TOKEN` (same
+value as the server `builderToken` password), `APPLOOP_SERVER_URL`
+(default `http://localhost:8080/`), `APPLOOP_WORK_DIR` (default
+`~/.apploop/builds`), `FLUTTER_BIN`/`FASTLANE_BIN` (defaults `flutter`/
+`fastlane`), plus the Apple credentials below. `BUILD_NUMBER`,
+`APP_IDENTIFIER` and the changelog are set per build automatically.
+
 ```sh
 # Analyze, format, test (inside apploop_server/)
 dart analyze

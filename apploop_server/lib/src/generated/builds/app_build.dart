@@ -30,11 +30,13 @@ abstract class AppBuild
     String? status,
     String? statusLog,
     String? testflightState,
+    DateTime? heartbeatAt,
   }) : buildNumber = buildNumber ?? 0,
        version = version ?? '1.0',
        status = status ?? 'queued',
        statusLog = statusLog ?? '',
-       testflightState = testflightState ?? '';
+       testflightState = testflightState ?? '',
+       heartbeatAt = heartbeatAt ?? DateTime.now();
 
   factory AppBuild({
     int? id,
@@ -48,6 +50,7 @@ abstract class AppBuild
     String? status,
     String? statusLog,
     String? testflightState,
+    DateTime? heartbeatAt,
   }) = _AppBuildImpl;
 
   factory AppBuild.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -71,6 +74,11 @@ abstract class AppBuild
       status: jsonSerialization['status'] as String?,
       statusLog: jsonSerialization['statusLog'] as String?,
       testflightState: jsonSerialization['testflightState'] as String?,
+      heartbeatAt: jsonSerialization['heartbeatAt'] == null
+          ? null
+          : _is.DateTimeJsonExtension.fromJson(
+              jsonSerialization['heartbeatAt'],
+            ),
     );
   }
 
@@ -110,6 +118,10 @@ abstract class AppBuild
   /// Mirror of Apple's external build state (e.g. ready, processing).
   String testflightState;
 
+  /// Last worker heartbeat. Claims older than 30 minutes without one are
+  /// considered stale and may be re-claimed.
+  DateTime heartbeatAt;
+
   @override
   _is.Table<int?> get table => t;
 
@@ -128,6 +140,7 @@ abstract class AppBuild
     String? status,
     String? statusLog,
     String? testflightState,
+    DateTime? heartbeatAt,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -144,6 +157,7 @@ abstract class AppBuild
       'status': status,
       'statusLog': statusLog,
       'testflightState': testflightState,
+      'heartbeatAt': heartbeatAt.toJson(),
     };
   }
 
@@ -162,6 +176,7 @@ abstract class AppBuild
       'status': status,
       'statusLog': statusLog,
       'testflightState': testflightState,
+      'heartbeatAt': heartbeatAt.toJson(),
     };
   }
 
@@ -214,6 +229,7 @@ class _AppBuildImpl extends AppBuild {
     String? status,
     String? statusLog,
     String? testflightState,
+    DateTime? heartbeatAt,
   }) : super._(
          id: id,
          wishId: wishId,
@@ -226,6 +242,7 @@ class _AppBuildImpl extends AppBuild {
          status: status,
          statusLog: statusLog,
          testflightState: testflightState,
+         heartbeatAt: heartbeatAt,
        );
 
   /// Returns a shallow copy of this [AppBuild]
@@ -244,6 +261,7 @@ class _AppBuildImpl extends AppBuild {
     String? status,
     String? statusLog,
     String? testflightState,
+    DateTime? heartbeatAt,
   }) {
     return AppBuild(
       id: id is int? ? id : this.id,
@@ -259,6 +277,7 @@ class _AppBuildImpl extends AppBuild {
       status: status ?? this.status,
       statusLog: statusLog ?? this.statusLog,
       testflightState: testflightState ?? this.testflightState,
+      heartbeatAt: heartbeatAt ?? this.heartbeatAt,
     );
   }
 }
@@ -306,6 +325,12 @@ class AppBuildUpdateTable extends _is.UpdateTable<AppBuildTable> {
         table.testflightState,
         value,
       );
+
+  _is.ColumnValue<DateTime, DateTime> heartbeatAt(DateTime value) =>
+      _is.ColumnValue(
+        table.heartbeatAt,
+        value,
+      );
 }
 
 class AppBuildTable extends _is.Table<int?> {
@@ -348,6 +373,11 @@ class AppBuildTable extends _is.Table<int?> {
       this,
       hasDefault: true,
     );
+    heartbeatAt = _is.ColumnDateTime(
+      'heartbeatAt',
+      this,
+      hasDefault: true,
+    );
   }
 
   late final AppBuildUpdateTable updateTable;
@@ -380,6 +410,10 @@ class AppBuildTable extends _is.Table<int?> {
 
   /// Mirror of Apple's external build state (e.g. ready, processing).
   late final _is.ColumnString testflightState;
+
+  /// Last worker heartbeat. Claims older than 30 minutes without one are
+  /// considered stale and may be re-claimed.
+  late final _is.ColumnDateTime heartbeatAt;
 
   _ionsu37y.AppWishTable get wish {
     if (_wish != null) return _wish!;
@@ -418,6 +452,7 @@ class AppBuildTable extends _is.Table<int?> {
     status,
     statusLog,
     testflightState,
+    heartbeatAt,
   ];
 
   @override

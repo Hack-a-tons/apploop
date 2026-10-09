@@ -19,6 +19,9 @@ fields:
   statusLog: String, default=''
   ### Mirror of Apple's external build state (e.g. ready, processing).
   testflightState: String, default=''
+  ### Last worker heartbeat. Claims older than 30 minutes without one are
+  ### considered stale and may be re-claimed.
+  heartbeatAt: DateTime, default=now
 indexes:
   app_build_wish_idx:
     fields: wishId

@@ -9,6 +9,8 @@ environment:
 resolution: workspace
 
 dependencies:
+  apploop_client:
+    path: ../apploop_client
   dart_jsonwebtoken: ^3.4.1
   http: ^1.6.0
   serverpod: 4.0.4

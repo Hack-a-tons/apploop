@@ -11,6 +11,8 @@
 // ignore_for_file: dead_code, unnecessary_type_check
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:apploop_server/src/generated/builds/app_build.dart'
+    as _ia2egj0z;
 import 'package:apploop_server/src/generated/wishes/wish.dart' as _it3mghal;
 import 'package:serverpod/protocol.dart' as _isp;
 import 'package:serverpod/serverpod.dart' as _is;
@@ -19,6 +21,7 @@ import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
 import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
     as _iais;
 import 'builds/app_build.dart' as _i1cc7s5u;
+import 'builds/build_task.dart' as _ihkq2rbu;
 import 'feedback/feedback_comment.dart' as _idgl1o2e;
 import 'feedback/feedback_recording.dart' as _ig7ycgng;
 import 'future_calls_generated_models/provision_app_future_call_provision_app_model.dart'
@@ -27,6 +30,7 @@ import 'greetings/greeting.dart' as _izw8z7ou;
 import 'store/store_app.dart' as _i9g2qfab;
 import 'wishes/wish.dart' as _ijn0eyds;
 export 'builds/app_build.dart';
+export 'builds/build_task.dart';
 export 'feedback/feedback_comment.dart';
 export 'feedback/feedback_recording.dart';
 export 'greetings/greeting.dart';
@@ -106,6 +110,13 @@ class Protocol extends _is.DatabaseSerializationManager {
           isNullable: false,
           dartType: 'String',
           columnDefault: '\'\'',
+        ),
+        _isp.ColumnDefinition(
+          name: 'heartbeatAt',
+          columnType: _isp.ColumnType.timestampWithoutTimeZone,
+          isNullable: false,
+          dartType: 'DateTime',
+          columnDefault: 'now',
         ),
       ],
       foreignKeys: [
@@ -572,6 +583,9 @@ class Protocol extends _is.DatabaseSerializationManager {
     if (t == _i1cc7s5u.AppBuild) {
       return _i1cc7s5u.AppBuild.fromJson(data) as T;
     }
+    if (t == _ihkq2rbu.BuildTask) {
+      return _ihkq2rbu.BuildTask.fromJson(data) as T;
+    }
     if (t == _idgl1o2e.FeedbackComment) {
       return _idgl1o2e.FeedbackComment.fromJson(data) as T;
     }
@@ -593,6 +607,9 @@ class Protocol extends _is.DatabaseSerializationManager {
     }
     if (t == _is.getType<_i1cc7s5u.AppBuild?>()) {
       return (data != null ? _i1cc7s5u.AppBuild.fromJson(data) : null) as T;
+    }
+    if (t == _is.getType<_ihkq2rbu.BuildTask?>()) {
+      return (data != null ? _ihkq2rbu.BuildTask.fromJson(data) : null) as T;
     }
     if (t == _is.getType<_idgl1o2e.FeedbackComment?>()) {
       return (data != null ? _idgl1o2e.FeedbackComment.fromJson(data) : null)
@@ -618,6 +635,12 @@ class Protocol extends _is.DatabaseSerializationManager {
     if (t == _is.getType<_ijn0eyds.AppWish?>()) {
       return (data != null ? _ijn0eyds.AppWish.fromJson(data) : null) as T;
     }
+    if (t == List<_ia2egj0z.AppBuild>) {
+      return (data as List)
+              .map((e) => deserialize<_ia2egj0z.AppBuild>(e))
+              .toList()
+          as T;
+    }
     if (t == List<_it3mghal.AppWish>) {
       return (data as List)
               .map((e) => deserialize<_it3mghal.AppWish>(e))
@@ -639,6 +662,7 @@ class Protocol extends _is.DatabaseSerializationManager {
   static String? getClassNameForType(Type type) {
     return switch (type) {
       _i1cc7s5u.AppBuild => 'AppBuild',
+      _ihkq2rbu.BuildTask => 'BuildTask',
       _idgl1o2e.FeedbackComment => 'FeedbackComment',
       _ig7ycgng.FeedbackRecording => 'FeedbackRecording',
       _ipi9xzeo.ProvisionAppFutureCallProvisionAppModel =>
@@ -662,6 +686,8 @@ class Protocol extends _is.DatabaseSerializationManager {
     switch (data) {
       case _i1cc7s5u.AppBuild():
         return 'AppBuild';
+      case _ihkq2rbu.BuildTask():
+        return 'BuildTask';
       case _idgl1o2e.FeedbackComment():
         return 'FeedbackComment';
       case _ig7ycgng.FeedbackRecording():
@@ -702,6 +728,9 @@ class Protocol extends _is.DatabaseSerializationManager {
     }
     if (dataClassName == 'AppBuild') {
       return deserialize<_i1cc7s5u.AppBuild>(data['data']);
+    }
+    if (dataClassName == 'BuildTask') {
+      return deserialize<_ihkq2rbu.BuildTask>(data['data']);
     }
     if (dataClassName == 'FeedbackComment') {
       return deserialize<_idgl1o2e.FeedbackComment>(data['data']);

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:serverpod_auth_idp_flutter/serverpod_auth_idp_flutter.dart';
 
 import 'client.dart';
+import 'screens/builds_screen.dart';
 import 'screens/coming_soon_screen.dart';
 import 'screens/sign_in_screen.dart';
 import 'screens/wishes_screen.dart';
@@ -81,7 +82,7 @@ class _AppLoopHomeState extends State<AppLoopHome> {
         index: _index,
         children: const [
           WishesScreen(),
-          ComingSoonScreen(title: 'Builds', feature: 'F4 (builder worker)'),
+          BuildsScreen(),
           ComingSoonScreen(title: 'Feedback', feature: 'F7 (feedback)'),
           ComingSoonScreen(title: 'Export', feature: 'F8 (export)'),
         ],

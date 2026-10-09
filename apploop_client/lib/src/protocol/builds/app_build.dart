@@ -29,11 +29,13 @@ abstract class AppBuild
     String? status,
     String? statusLog,
     String? testflightState,
+    DateTime? heartbeatAt,
   }) : buildNumber = buildNumber ?? 0,
        version = version ?? '1.0',
        status = status ?? 'queued',
        statusLog = statusLog ?? '',
-       testflightState = testflightState ?? '';
+       testflightState = testflightState ?? '',
+       heartbeatAt = heartbeatAt ?? DateTime.now();
 
   factory AppBuild({
     int? id,
@@ -47,6 +49,7 @@ abstract class AppBuild
     String? status,
     String? statusLog,
     String? testflightState,
+    DateTime? heartbeatAt,
   }) = _AppBuildImpl;
 
   factory AppBuild.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -70,6 +73,11 @@ abstract class AppBuild
       status: jsonSerialization['status'] as String?,
       statusLog: jsonSerialization['statusLog'] as String?,
       testflightState: jsonSerialization['testflightState'] as String?,
+      heartbeatAt: jsonSerialization['heartbeatAt'] == null
+          ? null
+          : _isc.DateTimeJsonExtension.fromJson(
+              jsonSerialization['heartbeatAt'],
+            ),
     );
   }
 
@@ -107,6 +115,10 @@ abstract class AppBuild
   /// Mirror of Apple's external build state (e.g. ready, processing).
   String testflightState;
 
+  /// Last worker heartbeat. Claims older than 30 minutes without one are
+  /// considered stale and may be re-claimed.
+  DateTime heartbeatAt;
+
   /// Returns a shallow copy of this [AppBuild]
   /// with some or all fields replaced by the given arguments.
   @_isc.useResult
@@ -122,6 +134,7 @@ abstract class AppBuild
     String? status,
     String? statusLog,
     String? testflightState,
+    DateTime? heartbeatAt,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -138,6 +151,7 @@ abstract class AppBuild
       'status': status,
       'statusLog': statusLog,
       'testflightState': testflightState,
+      'heartbeatAt': heartbeatAt.toJson(),
     };
   }
 
@@ -156,6 +170,7 @@ abstract class AppBuild
       'status': status,
       'statusLog': statusLog,
       'testflightState': testflightState,
+      'heartbeatAt': heartbeatAt.toJson(),
     };
   }
 
@@ -180,6 +195,7 @@ class _AppBuildImpl extends AppBuild {
     String? status,
     String? statusLog,
     String? testflightState,
+    DateTime? heartbeatAt,
   }) : super._(
          id: id,
          wishId: wishId,
@@ -192,6 +208,7 @@ class _AppBuildImpl extends AppBuild {
          status: status,
          statusLog: statusLog,
          testflightState: testflightState,
+         heartbeatAt: heartbeatAt,
        );
 
   /// Returns a shallow copy of this [AppBuild]
@@ -210,6 +227,7 @@ class _AppBuildImpl extends AppBuild {
     String? status,
     String? statusLog,
     String? testflightState,
+    DateTime? heartbeatAt,
   }) {
     return AppBuild(
       id: id is int? ? id : this.id,
@@ -225,6 +243,7 @@ class _AppBuildImpl extends AppBuild {
       status: status ?? this.status,
       statusLog: statusLog ?? this.statusLog,
       testflightState: testflightState ?? this.testflightState,
+      heartbeatAt: heartbeatAt ?? this.heartbeatAt,
     );
   }
 }
