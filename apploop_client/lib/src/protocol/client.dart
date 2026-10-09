@@ -16,8 +16,12 @@ import 'package:apploop_client/src/protocol/builds/build_task.dart'
     as _i0ot5ooz;
 import 'package:apploop_client/src/protocol/builds/testflight_info.dart'
     as _idjr27zf;
+import 'package:apploop_client/src/protocol/feedback/feedback_comment.dart'
+    as _if7yc53q;
 import 'package:apploop_client/src/protocol/feedback/feedback_recording.dart'
     as _iiwaw2h8;
+import 'package:apploop_client/src/protocol/feedback/recording_task.dart'
+    as _i7uo7c58;
 import 'package:apploop_client/src/protocol/greetings/greeting.dart'
     as _i3hjhujy;
 import 'package:apploop_client/src/protocol/store/store_app.dart' as _iv8bwsvn;
@@ -378,6 +382,66 @@ class EndpointBuilder extends _isc.EndpointRef {
   );
 }
 
+/// Builder worker API for feedback processing. No user login — every
+/// method takes the shared builder token, which must match
+/// `builderToken` in `config/passwords.yaml` (or the
+/// `SERVERPOD_PASSWORD_builderToken` environment variable in CI).
+/// Fails closed when unconfigured.
+/// {@category Endpoint}
+class EndpointFeedbackBuilder extends _isc.EndpointRef {
+  EndpointFeedbackBuilder(_isc.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'feedbackBuilder';
+
+  /// Claims the next uploaded recording for processing and returns the
+  /// work order with time-limited file URLs, or null when idle.
+  _ida.Future<_i7uo7c58.RecordingTask?> claimRecordingTask(
+    String builderToken,
+  ) => caller.callServerEndpoint<_i7uo7c58.RecordingTask?>(
+    'feedbackBuilder',
+    'claimRecordingTask',
+    {'builderToken': builderToken},
+  );
+
+  /// Upload description for one processing screenshot (`shots/<name>`).
+  /// Names are restricted to safe `.jpg` basenames.
+  _ida.Future<String> getScreenshotUploadDescription(
+    String builderToken,
+    int recordingId,
+    String fileName,
+  ) => caller.callServerEndpoint<String>(
+    'feedbackBuilder',
+    'getScreenshotUploadDescription',
+    {
+      'builderToken': builderToken,
+      'recordingId': recordingId,
+      'fileName': fileName,
+    },
+  );
+
+  /// Stores the processing result: transcript, normalized issues and one
+  /// comment per issue. `screenshotByIssue[i]` names the uploaded shot
+  /// for issue `i` (verified to exist; unmapped issues get none).
+  _ida.Future<_iiwaw2h8.FeedbackRecording> completeRecordingProcessing(
+    String builderToken,
+    int recordingId,
+    String transcript,
+    String issuesJson,
+    List<String> screenshotByIssue,
+  ) => caller.callServerEndpoint<_iiwaw2h8.FeedbackRecording>(
+    'feedbackBuilder',
+    'completeRecordingProcessing',
+    {
+      'builderToken': builderToken,
+      'recordingId': recordingId,
+      'transcript': transcript,
+      'issuesJson': issuesJson,
+      'screenshotByIssue': screenshotByIssue,
+    },
+  );
+}
+
 /// Test recordings: screen videos with spoken comments, plus audio-only
 /// notes. Flow: `startRecording` → upload video and/or audio with the
 /// issued descriptions → `completeRecording` → (F7) processing.
@@ -438,6 +502,20 @@ class EndpointFeedback extends _isc.EndpointRef {
     },
   );
 
+  /// Time-limited URL for one processing screenshot of an owned
+  /// recording.
+  _ida.Future<String> screenshotUrl(
+    int recordingId,
+    String fileName,
+  ) => caller.callServerEndpoint<String>(
+    'feedback',
+    'screenshotUrl',
+    {
+      'recordingId': recordingId,
+      'fileName': fileName,
+    },
+  );
+
   /// Lists the caller's recordings for one owned build, newest first.
   _ida.Future<List<_iiwaw2h8.FeedbackRecording>> listRecordings(int buildId) =>
       caller.callServerEndpoint<List<_iiwaw2h8.FeedbackRecording>>(
@@ -445,6 +523,77 @@ class EndpointFeedback extends _isc.EndpointRef {
         'listRecordings',
         {'buildId': buildId},
       );
+
+  /// Lists all of the caller's recordings across builds, newest first
+  /// (powers the Feedback tab).
+  _ida.Future<List<_iiwaw2h8.FeedbackRecording>> listMyRecordings() =>
+      caller.callServerEndpoint<List<_iiwaw2h8.FeedbackRecording>>(
+        'feedback',
+        'listMyRecordings',
+        {},
+      );
+
+  /// Lists comments of one owned recording, in creation order.
+  _ida.Future<List<_if7yc53q.FeedbackComment>> listComments(int recordingId) =>
+      caller.callServerEndpoint<List<_if7yc53q.FeedbackComment>>(
+        'feedback',
+        'listComments',
+        {'recordingId': recordingId},
+      );
+
+  /// Adds a manual comment (`origin` is `voice` or `keyboard`).
+  _ida.Future<_if7yc53q.FeedbackComment> addManualComment(
+    int recordingId,
+    String title,
+    String text,
+    String origin,
+  ) => caller.callServerEndpoint<_if7yc53q.FeedbackComment>(
+    'feedback',
+    'addManualComment',
+    {
+      'recordingId': recordingId,
+      'title': title,
+      'text': text,
+      'origin': origin,
+    },
+  );
+
+  /// Edits title, text and severity of an owned comment.
+  _ida.Future<_if7yc53q.FeedbackComment> editComment(
+    int id,
+    String title,
+    String text,
+    String severity,
+  ) => caller.callServerEndpoint<_if7yc53q.FeedbackComment>(
+    'feedback',
+    'editComment',
+    {
+      'id': id,
+      'title': title,
+      'text': text,
+      'severity': severity,
+    },
+  );
+
+  /// Marks an owned comment resolved or reopens it.
+  _ida.Future<_if7yc53q.FeedbackComment> setResolved(
+    int id,
+    bool resolved,
+  ) => caller.callServerEndpoint<_if7yc53q.FeedbackComment>(
+    'feedback',
+    'setResolved',
+    {
+      'id': id,
+      'resolved': resolved,
+    },
+  );
+
+  /// Deletes an owned comment.
+  _ida.Future<void> deleteComment(int id) => caller.callServerEndpoint<void>(
+    'feedback',
+    'deleteComment',
+    {'id': id},
+  );
 }
 
 /// This is an example endpoint that returns a greeting message through
@@ -622,6 +771,7 @@ class Client extends _isc.ServerpodClientShared {
     jwtRefresh = EndpointJwtRefresh(this);
     build = EndpointBuild(this);
     builder = EndpointBuilder(this);
+    feedbackBuilder = EndpointFeedbackBuilder(this);
     feedback = EndpointFeedback(this);
     greeting = EndpointGreeting(this);
     storeApp = EndpointStoreApp(this);
@@ -636,6 +786,8 @@ class Client extends _isc.ServerpodClientShared {
   late final EndpointBuild build;
 
   late final EndpointBuilder builder;
+
+  late final EndpointFeedbackBuilder feedbackBuilder;
 
   late final EndpointFeedback feedback;
 
@@ -653,6 +805,7 @@ class Client extends _isc.ServerpodClientShared {
     'jwtRefresh': jwtRefresh,
     'build': build,
     'builder': builder,
+    'feedbackBuilder': feedbackBuilder,
     'feedback': feedback,
     'greeting': greeting,
     'storeApp': storeApp,

@@ -156,4 +156,63 @@ class FakeAppLoopApi implements AppLoopApi {
   @override
   Future<String> recordingDownloadUrl(int recordingId, String kind) =>
       _call('recordingDownloadUrl', () async => 'https://example.com/$kind');
+
+  @override
+  Future<List<FeedbackRecording>> listMyRecordings() =>
+      _call('listMyRecordings', () async => recordings);
+
+  @override
+  Future<String> screenshotUrl(int recordingId, String fileName) =>
+      _call('screenshotUrl', () async => 'https://example.com/$fileName');
+
+  List<FeedbackComment> comments = [];
+
+  FeedbackComment testComment({int id = 1, bool resolved = false}) =>
+      FeedbackComment(
+        id: id,
+        recordingId: 1,
+        authUserId: _fakeUser,
+        title: 'Test issue',
+        text: 'It broke here',
+        severity: 'high',
+        timestamps: '[00:12]',
+        origin: 'extracted',
+      ).copyWith(resolved: resolved);
+
+  @override
+  Future<List<FeedbackComment>> listComments(int recordingId) =>
+      _call('listComments', () async => comments);
+
+  @override
+  Future<FeedbackComment> addManualComment(
+    int recordingId,
+    String title,
+    String text,
+    String origin,
+  ) => _call('addManualComment', () async {
+    final comment = testComment(id: comments.length + 1);
+    comments = [...comments, comment];
+    return comment;
+  });
+
+  @override
+  Future<FeedbackComment> editComment(
+    int id,
+    String title,
+    String text,
+    String severity,
+  ) => _call('editComment', () async => testComment(id: id));
+
+  @override
+  Future<FeedbackComment> setResolved(int id, bool resolved) =>
+      _call('setResolved', () async {
+        final updated = testComment(id: id, resolved: resolved);
+        comments = comments.map((c) => c.id == id ? updated : c).toList();
+        return updated;
+      });
+
+  @override
+  Future<void> deleteComment(int id) => _call('deleteComment', () async {
+    comments = comments.where((c) => c.id != id).toList();
+  });
 }

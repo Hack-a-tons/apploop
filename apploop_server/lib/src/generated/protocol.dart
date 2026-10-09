@@ -13,6 +13,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:apploop_server/src/generated/builds/app_build.dart'
     as _ia2egj0z;
+import 'package:apploop_server/src/generated/feedback/feedback_comment.dart'
+    as _idqt9vg1;
 import 'package:apploop_server/src/generated/feedback/feedback_recording.dart'
     as _ig60ukux;
 import 'package:apploop_server/src/generated/wishes/wish.dart' as _it3mghal;
@@ -27,6 +29,7 @@ import 'builds/build_task.dart' as _ihkq2rbu;
 import 'builds/testflight_info.dart' as _ib1mtbgz;
 import 'feedback/feedback_comment.dart' as _idgl1o2e;
 import 'feedback/feedback_recording.dart' as _ig7ycgng;
+import 'feedback/recording_task.dart' as _iif2nqze;
 import 'future_calls_generated_models/provision_app_future_call_provision_app_model.dart'
     as _ipi9xzeo;
 import 'greetings/greeting.dart' as _izw8z7ou;
@@ -37,6 +40,7 @@ export 'builds/build_task.dart';
 export 'builds/testflight_info.dart';
 export 'feedback/feedback_comment.dart';
 export 'feedback/feedback_recording.dart';
+export 'feedback/recording_task.dart';
 export 'greetings/greeting.dart';
 export 'store/store_app.dart';
 export 'wishes/wish.dart';
@@ -606,6 +610,9 @@ class Protocol extends _is.DatabaseSerializationManager {
     if (t == _ig7ycgng.FeedbackRecording) {
       return _ig7ycgng.FeedbackRecording.fromJson(data) as T;
     }
+    if (t == _iif2nqze.RecordingTask) {
+      return _iif2nqze.RecordingTask.fromJson(data) as T;
+    }
     if (t == _ipi9xzeo.ProvisionAppFutureCallProvisionAppModel) {
       return _ipi9xzeo.ProvisionAppFutureCallProvisionAppModel.fromJson(data)
           as T;
@@ -637,6 +644,10 @@ class Protocol extends _is.DatabaseSerializationManager {
       return (data != null ? _ig7ycgng.FeedbackRecording.fromJson(data) : null)
           as T;
     }
+    if (t == _is.getType<_iif2nqze.RecordingTask?>()) {
+      return (data != null ? _iif2nqze.RecordingTask.fromJson(data) : null)
+          as T;
+    }
     if (t ==
         _is.getType<_ipi9xzeo.ProvisionAppFutureCallProvisionAppModel?>()) {
       return (data != null
@@ -659,9 +670,18 @@ class Protocol extends _is.DatabaseSerializationManager {
               .toList()
           as T;
     }
+    if (t == List<String>) {
+      return (data as List).map((e) => deserialize<String>(e)).toList() as T;
+    }
     if (t == List<_ig60ukux.FeedbackRecording>) {
       return (data as List)
               .map((e) => deserialize<_ig60ukux.FeedbackRecording>(e))
+              .toList()
+          as T;
+    }
+    if (t == List<_idqt9vg1.FeedbackComment>) {
+      return (data as List)
+              .map((e) => deserialize<_idqt9vg1.FeedbackComment>(e))
               .toList()
           as T;
     }
@@ -690,6 +710,7 @@ class Protocol extends _is.DatabaseSerializationManager {
       _ib1mtbgz.TestflightInfo => 'TestflightInfo',
       _idgl1o2e.FeedbackComment => 'FeedbackComment',
       _ig7ycgng.FeedbackRecording => 'FeedbackRecording',
+      _iif2nqze.RecordingTask => 'RecordingTask',
       _ipi9xzeo.ProvisionAppFutureCallProvisionAppModel =>
         'ProvisionAppFutureCallProvisionAppModel',
       _izw8z7ou.Greeting => 'Greeting',
@@ -719,6 +740,8 @@ class Protocol extends _is.DatabaseSerializationManager {
         return 'FeedbackComment';
       case _ig7ycgng.FeedbackRecording():
         return 'FeedbackRecording';
+      case _iif2nqze.RecordingTask():
+        return 'RecordingTask';
       case _ipi9xzeo.ProvisionAppFutureCallProvisionAppModel():
         return 'ProvisionAppFutureCallProvisionAppModel';
       case _izw8z7ou.Greeting():
@@ -767,6 +790,9 @@ class Protocol extends _is.DatabaseSerializationManager {
     }
     if (dataClassName == 'FeedbackRecording') {
       return deserialize<_ig7ycgng.FeedbackRecording>(data['data']);
+    }
+    if (dataClassName == 'RecordingTask') {
+      return deserialize<_iif2nqze.RecordingTask>(data['data']);
     }
     if (dataClassName == 'ProvisionAppFutureCallProvisionAppModel') {
       return deserialize<_ipi9xzeo.ProvisionAppFutureCallProvisionAppModel>(

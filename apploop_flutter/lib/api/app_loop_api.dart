@@ -22,7 +22,25 @@ abstract class AppLoopApi {
   Future<String> audioUploadDescription(int recordingId);
   Future<FeedbackRecording> completeRecording(int recordingId);
   Future<List<FeedbackRecording>> listRecordings(int buildId);
+  Future<List<FeedbackRecording>> listMyRecordings();
   Future<String> recordingDownloadUrl(int recordingId, String kind);
+  Future<String> screenshotUrl(int recordingId, String fileName);
+
+  Future<List<FeedbackComment>> listComments(int recordingId);
+  Future<FeedbackComment> addManualComment(
+    int recordingId,
+    String title,
+    String text,
+    String origin,
+  );
+  Future<FeedbackComment> editComment(
+    int id,
+    String title,
+    String text,
+    String severity,
+  );
+  Future<FeedbackComment> setResolved(int id, bool resolved);
+  Future<void> deleteComment(int id);
 }
 
 /// Live implementation over the generated Serverpod client.
@@ -91,6 +109,41 @@ class ServerAppLoopApi implements AppLoopApi {
       _client.feedback.listRecordings(buildId);
 
   @override
+  Future<List<FeedbackRecording>> listMyRecordings() =>
+      _client.feedback.listMyRecordings();
+
+  @override
   Future<String> recordingDownloadUrl(int recordingId, String kind) =>
       _client.feedback.downloadUrl(recordingId, kind);
+
+  @override
+  Future<String> screenshotUrl(int recordingId, String fileName) =>
+      _client.feedback.screenshotUrl(recordingId, fileName);
+
+  @override
+  Future<List<FeedbackComment>> listComments(int recordingId) =>
+      _client.feedback.listComments(recordingId);
+
+  @override
+  Future<FeedbackComment> addManualComment(
+    int recordingId,
+    String title,
+    String text,
+    String origin,
+  ) => _client.feedback.addManualComment(recordingId, title, text, origin);
+
+  @override
+  Future<FeedbackComment> editComment(
+    int id,
+    String title,
+    String text,
+    String severity,
+  ) => _client.feedback.editComment(id, title, text, severity);
+
+  @override
+  Future<FeedbackComment> setResolved(int id, bool resolved) =>
+      _client.feedback.setResolved(id, resolved);
+
+  @override
+  Future<void> deleteComment(int id) => _client.feedback.deleteComment(id);
 }

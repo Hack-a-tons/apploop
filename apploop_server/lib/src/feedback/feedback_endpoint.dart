@@ -2,6 +2,7 @@ import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_idp_server/core.dart';
 
 import '../generated/protocol.dart';
+import 'feedback_files.dart';
 
 /// Test recordings: screen videos with spoken comments, plus audio-only
 /// notes. Flow: `startRecording` → upload video and/or audio with the
@@ -34,7 +35,7 @@ class FeedbackEndpoint extends Endpoint {
     final recording = await _ownedRecording(session, recordingId);
     return session.storage.createUploadDescription(
       storageId: 'private',
-      path: _videoPath(recording),
+      path: feedbackVideoPath(recording),
       options: UploadOptions(
         expirationDuration: const Duration(hours: 1),
         maxFileSize: 500 * 1024 * 1024,
@@ -50,7 +51,7 @@ class FeedbackEndpoint extends Endpoint {
     final recording = await _ownedRecording(session, recordingId);
     return session.storage.createUploadDescription(
       storageId: 'private',
-      path: _audioPath(recording),
+      path: feedbackAudioPath(recording),
       options: UploadOptions(
         expirationDuration: const Duration(hours: 1),
         maxFileSize: 25 * 1024 * 1024,
@@ -67,11 +68,11 @@ class FeedbackEndpoint extends Endpoint {
     final recording = await _ownedRecording(session, recordingId);
     final hasVideo = await session.storage.fileExists(
       storageId: 'private',
-      path: _videoPath(recording),
+      path: feedbackVideoPath(recording),
     );
     final hasAudio = await session.storage.fileExists(
       storageId: 'private',
-      path: _audioPath(recording),
+      path: feedbackAudioPath(recording),
     );
     if (!hasVideo && !hasAudio) {
       throw StateError(
@@ -81,7 +82,7 @@ class FeedbackEndpoint extends Endpoint {
     return FeedbackRecording.db.updateRow(
       session,
       recording.copyWith(
-        videoPath: hasVideo ? _videoPath(recording) : '',
+        videoPath: hasVideo ? feedbackVideoPath(recording) : '',
         status: 'uploaded',
       ),
     );
@@ -97,13 +98,31 @@ class FeedbackEndpoint extends Endpoint {
     final recording = await _ownedRecording(session, recordingId);
     final path = switch (kind) {
       'video' => recording.videoPath,
-      'audio' => _audioPath(recording),
+      'audio' => feedbackAudioPath(recording),
       _ => throw ArgumentError.value(kind, 'kind', 'Use video or audio.'),
     };
     if (path.isEmpty) throw StateError('No $kind attached to this recording.');
     final uri = await session.storage.temporaryDownloadUrl(
       storageId: 'private',
       path: path,
+    );
+    return uri.toString();
+  }
+
+  /// Time-limited URL for one processing screenshot of an owned
+  /// recording.
+  Future<String> screenshotUrl(
+    Session session,
+    int recordingId,
+    String fileName,
+  ) async {
+    final recording = await _ownedRecording(session, recordingId);
+    if (!isSafeShotName(fileName)) {
+      throw ArgumentError.value(fileName, 'fileName', 'Unsafe name.');
+    }
+    final uri = await session.storage.temporaryDownloadUrl(
+      storageId: 'private',
+      path: feedbackShotPath(recording, fileName),
     );
     return uri.toString();
   }
@@ -121,11 +140,119 @@ class FeedbackEndpoint extends Endpoint {
     );
   }
 
-  String _videoPath(FeedbackRecording recording) =>
-      'feedback/${recording.authUserId}/${recording.id}/video.mov';
+  /// Lists all of the caller's recordings across builds, newest first
+  /// (powers the Feedback tab).
+  Future<List<FeedbackRecording>> listMyRecordings(Session session) async {
+    final owner = session.authenticated!.authUserId;
+    final wishes = await AppWish.db.find(
+      session,
+      where: (t) => t.authUserId.equals(owner),
+    );
+    if (wishes.isEmpty) return [];
+    final wishIds = wishes.map((w) => w.id!).toSet();
+    final builds = await AppBuild.db.find(session);
+    final buildIds = builds
+        .where((b) => wishIds.contains(b.wishId))
+        .map((b) => b.id!)
+        .toSet();
+    if (buildIds.isEmpty) return [];
+    final recordings = await FeedbackRecording.db.find(session);
+    final mine = recordings.where((r) => buildIds.contains(r.buildId)).toList()
+      ..sort((a, b) => b.id!.compareTo(a.id!));
+    return mine;
+  }
 
-  String _audioPath(FeedbackRecording recording) =>
-      'feedback/${recording.authUserId}/${recording.id}/audio.m4a';
+  // ------------------------------------------------------------------
+  // Comments (extracted issues + manual notes).
+  // ------------------------------------------------------------------
+
+  /// Lists comments of one owned recording, in creation order.
+  Future<List<FeedbackComment>> listComments(
+    Session session,
+    int recordingId,
+  ) async {
+    await _ownedRecording(session, recordingId);
+    return FeedbackComment.db.find(
+      session,
+      where: (t) => t.recordingId.equals(recordingId),
+      orderBy: (t) => t.id,
+    );
+  }
+
+  /// Adds a manual comment (`origin` is `voice` or `keyboard`).
+  Future<FeedbackComment> addManualComment(
+    Session session,
+    int recordingId,
+    String title,
+    String text,
+    String origin,
+  ) async {
+    final recording = await _ownedRecording(session, recordingId);
+    if (title.trim().isEmpty) {
+      throw ArgumentError('Comment title must not be empty.');
+    }
+    if (origin != 'voice' && origin != 'keyboard') {
+      throw ArgumentError.value(origin, 'origin', 'Use voice or keyboard.');
+    }
+    return FeedbackComment.db.insertRow(
+      session,
+      FeedbackComment(
+        recordingId: recording.id!,
+        authUserId: session.authenticated!.authUserId,
+        title: title.trim(),
+        text: text.trim(),
+        origin: origin,
+      ),
+    );
+  }
+
+  /// Edits title, text and severity of an owned comment.
+  Future<FeedbackComment> editComment(
+    Session session,
+    int id,
+    String title,
+    String text,
+    String severity,
+  ) async {
+    final comment = await _ownedComment(session, id);
+    if (title.trim().isEmpty) {
+      throw ArgumentError('Comment title must not be empty.');
+    }
+    if (!{'high', 'medium', 'low'}.contains(severity)) {
+      throw ArgumentError.value(
+        severity,
+        'severity',
+        'Use high, medium or low.',
+      );
+    }
+    return FeedbackComment.db.updateRow(
+      session,
+      comment.copyWith(
+        title: title.trim(),
+        text: text.trim(),
+        severity: severity,
+      ),
+    );
+  }
+
+  /// Marks an owned comment resolved or reopens it.
+  Future<FeedbackComment> setResolved(
+    Session session,
+    int id,
+    bool resolved,
+  ) async {
+    final comment = await _ownedComment(session, id);
+    return FeedbackComment.db.updateRow(
+      session,
+      comment.copyWith(resolved: resolved),
+    );
+  }
+
+  /// Deletes an owned comment.
+  Future<void> deleteComment(Session session, int id) async {
+    final comment = await _ownedComment(session, id);
+    await FeedbackComment.db.deleteRow(session, comment);
+  }
 
   Future<AppBuild> _ownedBuild(Session session, int buildId) async {
     final build = await AppBuild.db.findById(session, buildId);
@@ -149,5 +276,12 @@ class FeedbackEndpoint extends Endpoint {
     if (recording == null) throw StateError('Recording not found.');
     await _ownedBuild(session, recording.buildId);
     return recording;
+  }
+
+  Future<FeedbackComment> _ownedComment(Session session, int id) async {
+    final comment = await FeedbackComment.db.findById(session, id);
+    if (comment == null) throw StateError('Comment not found.');
+    await _ownedRecording(session, comment.recordingId);
+    return comment;
   }
 }

@@ -51,11 +51,18 @@ Future<void> main() async {
   while (true) {
     try {
       final task = await worker.client.builder.claimBuildTask(token);
-      if (task == null) {
-        await Future.delayed(_pollInterval);
+      if (task != null) {
+        await worker.run(task);
         continue;
       }
-      await worker.run(task);
+      final recording = await worker.client.feedbackBuilder.claimRecordingTask(
+        token,
+      );
+      if (recording != null) {
+        await worker.processRecording(recording);
+        continue;
+      }
+      await Future.delayed(_pollInterval);
     } catch (e) {
       stderr.writeln('worker error: $e');
       await Future.delayed(_pollInterval);
@@ -266,6 +273,166 @@ class _Builder {
     flush.cancel();
     await log.flush(status);
     return code;
+  }
+
+  /// Processes one claimed recording: download video, run
+  /// `explain.sh debug`, upload screenshots, post transcript + issues.
+  /// Never throws: failures complete with a note so manual comments
+  /// keep working.
+  Future<void> processRecording(RecordingTask task) async {
+    final recording = task.recording;
+    stdout.writeln('processing recording ${recording.id} ...');
+    try {
+      if (task.videoUrl.isEmpty) {
+        await client.feedbackBuilder.completeRecordingProcessing(
+          token,
+          recording.id!,
+          'Audio-only recording — automatic issue extraction needs video. '
+              'Add comments manually.',
+          '[]',
+          [],
+        );
+        return;
+      }
+      final explainSh = env['EXPLAIN_SH'] ?? '${env['HOME']}/bin/explain.sh';
+      if (!File(explainSh).existsSync()) {
+        stdout.writeln('explain.sh not found at $explainSh — skipping.');
+        return;
+      }
+      final dir = Directory('${workRoot.path}/recording_${recording.id}');
+      if (dir.existsSync()) dir.deleteSync(recursive: true);
+      await dir.create(recursive: true);
+      final video = File('${dir.path}/video.mov');
+      await _download(task.videoUrl, video);
+      final out = Directory('${dir.path}/out');
+      final result = await Process.run(explainSh, [
+        'debug',
+        video.path,
+        '-o',
+        out.path,
+      ]);
+      stdout.write(result.stdout);
+      if (result.exitCode != 0) {
+        stderr.writeln('explain.sh failed: ${result.stderr}');
+      }
+      final transcript = await _readText(
+        File('${out.path}/transcript.txt'),
+      );
+      final issues = await _readIssues(out);
+      final shots = await _uploadShots(out, recording.id!, issues.length);
+      final screenshotByIssue = <String>[];
+      for (var i = 0; i < issues.length; i++) {
+        screenshotByIssue.add(shots[i] ?? '');
+      }
+      await client.feedbackBuilder.completeRecordingProcessing(
+        token,
+        recording.id!,
+        transcript,
+        jsonEncode(issues),
+        screenshotByIssue,
+      );
+      stdout.writeln(
+        'recording ${recording.id} ready (${issues.length} issues).',
+      );
+    } catch (e) {
+      stderr.writeln('processing failed: $e');
+      await client.feedbackBuilder.completeRecordingProcessing(
+        token,
+        recording.id!,
+        'Automatic processing failed ($e). Add comments manually.',
+        '[]',
+        [],
+      );
+    }
+  }
+
+  Future<void> _download(String url, File target) async {
+    final request = await HttpClient().getUrl(Uri.parse(url));
+    final response = await request.close();
+    if (response.statusCode != 200) {
+      throw StateError('Download failed (HTTP ${response.statusCode}).');
+    }
+    await response.pipe(target.openWrite());
+  }
+
+  Future<String> _readText(File file) async {
+    if (!file.existsSync()) return '';
+    return file.readAsString();
+  }
+
+  /// Reads `issues.raw.json`, falling back to `issues.tsv` converted to
+  /// the same shape, else an empty list.
+  Future<List<Map<String, dynamic>>> _readIssues(Directory out) async {
+    final raw = File('${out.path}/issues.raw.json');
+    if (raw.existsSync()) {
+      final decoded = jsonDecode(await raw.readAsString());
+      if (decoded is List) {
+        return decoded
+            .whereType<Map>()
+            .map((e) => Map<String, dynamic>.from(e))
+            .toList();
+      }
+    }
+    final tsv = File('${out.path}/issues.tsv');
+    if (!tsv.existsSync()) return [];
+    final issues = <Map<String, dynamic>>[];
+    for (final line in await tsv.readAsLines()) {
+      if (line.trim().isEmpty) continue;
+      final cols = line.split('\t');
+      while (cols.length < 6) {
+        cols.add('');
+      }
+      issues.add({
+        'title': cols[0],
+        'severity': cols[1].isEmpty ? 'medium' : cols[1],
+        'timestamps': cols[2].isEmpty ? <String>[] : [cols[2]],
+        'quote': cols[3],
+        'fix': cols[4],
+      });
+    }
+    return issues;
+  }
+
+  /// Uploads unique screenshots and maps issue index → shot file name.
+  /// Issue rows are 1-based; candidate frames are cand-NN.jpg.
+  Future<Map<int, String>> _uploadShots(
+    Directory out,
+    int recordingId,
+    int issueCount,
+  ) async {
+    final byIssue = <int, String>{};
+    final shotsDir = Directory('${out.path}/shots');
+    if (!shotsDir.existsSync()) return byIssue;
+    final map = <String, String>{};
+    final shotmap = File('${shotsDir.path}/shotmap.tsv');
+    if (shotmap.existsSync()) {
+      for (final line in await shotmap.readAsLines()) {
+        final cols = line.split('\t');
+        if (cols.length == 2 && cols[1].isNotEmpty) {
+          map[cols[0]] = cols[1];
+        }
+      }
+    }
+    final uploaded = <String>{};
+    for (var n = 1; n <= issueCount; n++) {
+      final cand = 'cand-${n.toString().padLeft(2, '0')}.jpg';
+      final shot = map[cand];
+      if (shot == null) continue;
+      if (!uploaded.contains(shot)) {
+        final file = File('${shotsDir.path}/$shot');
+        if (!file.existsSync()) continue;
+        final description = await client.feedbackBuilder
+            .getScreenshotUploadDescription(token, recordingId, shot);
+        final ok = await FileUploader(description).upload(
+          file.openRead(),
+          await file.length(),
+        );
+        if (!ok) throw StateError('Screenshot upload failed ($shot).');
+        uploaded.add(shot);
+      }
+      byIssue[n - 1] = shot;
+    }
+    return byIssue;
   }
 }
 

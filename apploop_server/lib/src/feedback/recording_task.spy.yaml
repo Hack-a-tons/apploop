@@ -1,0 +1,10 @@
+# Work order for processing one recording. Not stored — assembled at
+# claim time with time-limited file URLs for the builder worker.
+class: RecordingTask
+fields:
+  ### The recording to process.
+  recording: FeedbackRecording
+  ### Time-limited video URL, empty when no video was uploaded.
+  videoUrl: String
+  ### Time-limited audio URL, empty when no audio was uploaded.
+  audioUrl: String

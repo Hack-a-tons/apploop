@@ -20,6 +20,7 @@ import '../auth/email_idp_endpoint.dart' as _iuc1hd5t;
 import '../auth/jwt_refresh_endpoint.dart' as _inwq3ztq;
 import '../builds/build_endpoint.dart' as _iu98uiq9;
 import '../builds/builder_endpoint.dart' as _infkm04t;
+import '../feedback/feedback_builder_endpoint.dart' as _i9ct8h7j;
 import '../feedback/feedback_endpoint.dart' as _i3n4p88h;
 import '../greetings/greeting_endpoint.dart' as _il624ik7;
 import '../store/store_app_endpoint.dart' as _iz4r4dl0;
@@ -52,6 +53,12 @@ class Endpoints extends _is.EndpointDispatch {
         ..initialize(
           server,
           'builder',
+          null,
+        ),
+      'feedbackBuilder': _i9ct8h7j.FeedbackBuilderEndpoint()
+        ..initialize(
+          server,
+          'feedbackBuilder',
           null,
         ),
       'feedback': _i3n4p88h.FeedbackEndpoint()
@@ -501,6 +508,111 @@ class Endpoints extends _is.EndpointDispatch {
         ),
       },
     );
+    connectors['feedbackBuilder'] = _is.EndpointConnector(
+      name: 'feedbackBuilder',
+      endpoint: endpoints['feedbackBuilder']!,
+      methodConnectors: {
+        'claimRecordingTask': _is.MethodConnector(
+          name: 'claimRecordingTask',
+          params: {
+            'builderToken': _is.ParameterDescription(
+              name: 'builderToken',
+              type: _is.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['feedbackBuilder']
+                          as _i9ct8h7j.FeedbackBuilderEndpoint)
+                      .claimRecordingTask(
+                        session,
+                        params['builderToken'],
+                      ),
+        ),
+        'getScreenshotUploadDescription': _is.MethodConnector(
+          name: 'getScreenshotUploadDescription',
+          params: {
+            'builderToken': _is.ParameterDescription(
+              name: 'builderToken',
+              type: _is.getType<String>(),
+              nullable: false,
+            ),
+            'recordingId': _is.ParameterDescription(
+              name: 'recordingId',
+              type: _is.getType<int>(),
+              nullable: false,
+            ),
+            'fileName': _is.ParameterDescription(
+              name: 'fileName',
+              type: _is.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['feedbackBuilder']
+                          as _i9ct8h7j.FeedbackBuilderEndpoint)
+                      .getScreenshotUploadDescription(
+                        session,
+                        params['builderToken'],
+                        params['recordingId'],
+                        params['fileName'],
+                      ),
+        ),
+        'completeRecordingProcessing': _is.MethodConnector(
+          name: 'completeRecordingProcessing',
+          params: {
+            'builderToken': _is.ParameterDescription(
+              name: 'builderToken',
+              type: _is.getType<String>(),
+              nullable: false,
+            ),
+            'recordingId': _is.ParameterDescription(
+              name: 'recordingId',
+              type: _is.getType<int>(),
+              nullable: false,
+            ),
+            'transcript': _is.ParameterDescription(
+              name: 'transcript',
+              type: _is.getType<String>(),
+              nullable: false,
+            ),
+            'issuesJson': _is.ParameterDescription(
+              name: 'issuesJson',
+              type: _is.getType<String>(),
+              nullable: false,
+            ),
+            'screenshotByIssue': _is.ParameterDescription(
+              name: 'screenshotByIssue',
+              type: _is.getType<List<String>>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['feedbackBuilder']
+                          as _i9ct8h7j.FeedbackBuilderEndpoint)
+                      .completeRecordingProcessing(
+                        session,
+                        params['builderToken'],
+                        params['recordingId'],
+                        params['transcript'],
+                        params['issuesJson'],
+                        params['screenshotByIssue'],
+                      ),
+        ),
+      },
+    );
     connectors['feedback'] = _is.EndpointConnector(
       name: 'feedback',
       endpoint: endpoints['feedback']!,
@@ -606,6 +718,31 @@ class Endpoints extends _is.EndpointDispatch {
                     params['kind'],
                   ),
         ),
+        'screenshotUrl': _is.MethodConnector(
+          name: 'screenshotUrl',
+          params: {
+            'recordingId': _is.ParameterDescription(
+              name: 'recordingId',
+              type: _is.getType<int>(),
+              nullable: false,
+            ),
+            'fileName': _is.ParameterDescription(
+              name: 'fileName',
+              type: _is.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['feedback'] as _i3n4p88h.FeedbackEndpoint)
+                  .screenshotUrl(
+                    session,
+                    params['recordingId'],
+                    params['fileName'],
+                  ),
+        ),
         'listRecordings': _is.MethodConnector(
           name: 'listRecordings',
           params: {
@@ -623,6 +760,153 @@ class Endpoints extends _is.EndpointDispatch {
                   .listRecordings(
                     session,
                     params['buildId'],
+                  ),
+        ),
+        'listMyRecordings': _is.MethodConnector(
+          name: 'listMyRecordings',
+          params: {},
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['feedback'] as _i3n4p88h.FeedbackEndpoint)
+                  .listMyRecordings(session),
+        ),
+        'listComments': _is.MethodConnector(
+          name: 'listComments',
+          params: {
+            'recordingId': _is.ParameterDescription(
+              name: 'recordingId',
+              type: _is.getType<int>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['feedback'] as _i3n4p88h.FeedbackEndpoint)
+                  .listComments(
+                    session,
+                    params['recordingId'],
+                  ),
+        ),
+        'addManualComment': _is.MethodConnector(
+          name: 'addManualComment',
+          params: {
+            'recordingId': _is.ParameterDescription(
+              name: 'recordingId',
+              type: _is.getType<int>(),
+              nullable: false,
+            ),
+            'title': _is.ParameterDescription(
+              name: 'title',
+              type: _is.getType<String>(),
+              nullable: false,
+            ),
+            'text': _is.ParameterDescription(
+              name: 'text',
+              type: _is.getType<String>(),
+              nullable: false,
+            ),
+            'origin': _is.ParameterDescription(
+              name: 'origin',
+              type: _is.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['feedback'] as _i3n4p88h.FeedbackEndpoint)
+                  .addManualComment(
+                    session,
+                    params['recordingId'],
+                    params['title'],
+                    params['text'],
+                    params['origin'],
+                  ),
+        ),
+        'editComment': _is.MethodConnector(
+          name: 'editComment',
+          params: {
+            'id': _is.ParameterDescription(
+              name: 'id',
+              type: _is.getType<int>(),
+              nullable: false,
+            ),
+            'title': _is.ParameterDescription(
+              name: 'title',
+              type: _is.getType<String>(),
+              nullable: false,
+            ),
+            'text': _is.ParameterDescription(
+              name: 'text',
+              type: _is.getType<String>(),
+              nullable: false,
+            ),
+            'severity': _is.ParameterDescription(
+              name: 'severity',
+              type: _is.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['feedback'] as _i3n4p88h.FeedbackEndpoint)
+                  .editComment(
+                    session,
+                    params['id'],
+                    params['title'],
+                    params['text'],
+                    params['severity'],
+                  ),
+        ),
+        'setResolved': _is.MethodConnector(
+          name: 'setResolved',
+          params: {
+            'id': _is.ParameterDescription(
+              name: 'id',
+              type: _is.getType<int>(),
+              nullable: false,
+            ),
+            'resolved': _is.ParameterDescription(
+              name: 'resolved',
+              type: _is.getType<bool>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['feedback'] as _i3n4p88h.FeedbackEndpoint)
+                  .setResolved(
+                    session,
+                    params['id'],
+                    params['resolved'],
+                  ),
+        ),
+        'deleteComment': _is.MethodConnector(
+          name: 'deleteComment',
+          params: {
+            'id': _is.ParameterDescription(
+              name: 'id',
+              type: _is.getType<int>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['feedback'] as _i3n4p88h.FeedbackEndpoint)
+                  .deleteComment(
+                    session,
+                    params['id'],
                   ),
         ),
       },

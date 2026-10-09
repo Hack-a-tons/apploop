@@ -7,6 +7,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:record/record.dart';
 
 import '../api/app_loop_api.dart';
+import 'recording_detail_screen.dart';
 
 /// F6: test one build — attach a screen recording and/or an audio note.
 ///
@@ -220,6 +221,18 @@ class _TestSessionScreenState extends State<TestSessionScreen> {
                   ),
                   title: Text('Recording ${recording.id}'),
                   subtitle: Text('Status: ${recording.status}'),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () async {
+                    await Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => RecordingDetailScreen(
+                          api: widget.api,
+                          recordingId: recording.id!,
+                        ),
+                      ),
+                    );
+                    if (context.mounted) _refresh();
+                  },
                 ),
               ),
         ],

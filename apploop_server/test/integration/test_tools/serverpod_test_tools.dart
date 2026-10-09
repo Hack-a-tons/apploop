@@ -19,8 +19,12 @@ import 'package:apploop_server/src/generated/builds/build_task.dart'
     as _i118q4yp;
 import 'package:apploop_server/src/generated/builds/testflight_info.dart'
     as _iteistin;
+import 'package:apploop_server/src/generated/feedback/feedback_comment.dart'
+    as _idqt9vg1;
 import 'package:apploop_server/src/generated/feedback/feedback_recording.dart'
     as _ig60ukux;
+import 'package:apploop_server/src/generated/feedback/recording_task.dart'
+    as _iddcs434;
 import 'package:apploop_server/src/generated/future_calls.dart' as _i1nmt0s2;
 import 'package:apploop_server/src/generated/future_calls_generated_models/provision_app_future_call_provision_app_model.dart'
     as _iiej2ygv;
@@ -175,6 +179,8 @@ class TestEndpoints {
 
   late final _BuilderEndpoint builder;
 
+  late final _FeedbackBuilderEndpoint feedbackBuilder;
+
   late final _FeedbackEndpoint feedback;
 
   late final _GreetingEndpoint greeting;
@@ -204,6 +210,10 @@ class _InternalTestEndpoints extends TestEndpoints
       serializationManager,
     );
     builder = _BuilderEndpoint(
+      endpoints,
+      serializationManager,
+    );
+    feedbackBuilder = _FeedbackBuilderEndpoint(
       endpoints,
       serializationManager,
     );
@@ -866,6 +876,126 @@ class _BuilderEndpoint {
   }
 }
 
+class _FeedbackBuilderEndpoint {
+  _FeedbackBuilderEndpoint(
+    this._endpointDispatch,
+    this._serializationManager,
+  );
+
+  final _is.EndpointDispatch _endpointDispatch;
+
+  final _is.SerializationManager _serializationManager;
+
+  _ida.Future<_iddcs434.RecordingTask?> claimRecordingTask(
+    _ist.TestSessionBuilder sessionBuilder,
+    String builderToken,
+  ) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'feedbackBuilder',
+            method: 'claimRecordingTask',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'feedbackBuilder',
+          methodName: 'claimRecordingTask',
+          parameters: _ist.testObjectToJson({'builderToken': builderToken}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _ida.Future<_iddcs434.RecordingTask?>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _ida.Future<String> getScreenshotUploadDescription(
+    _ist.TestSessionBuilder sessionBuilder,
+    String builderToken,
+    int recordingId,
+    String fileName,
+  ) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'feedbackBuilder',
+            method: 'getScreenshotUploadDescription',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'feedbackBuilder',
+          methodName: 'getScreenshotUploadDescription',
+          parameters: _ist.testObjectToJson({
+            'builderToken': builderToken,
+            'recordingId': recordingId,
+            'fileName': fileName,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _ida.Future<String>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _ida.Future<_ig60ukux.FeedbackRecording> completeRecordingProcessing(
+    _ist.TestSessionBuilder sessionBuilder,
+    String builderToken,
+    int recordingId,
+    String transcript,
+    String issuesJson,
+    List<String> screenshotByIssue,
+  ) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'feedbackBuilder',
+            method: 'completeRecordingProcessing',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'feedbackBuilder',
+          methodName: 'completeRecordingProcessing',
+          parameters: _ist.testObjectToJson({
+            'builderToken': builderToken,
+            'recordingId': recordingId,
+            'transcript': transcript,
+            'issuesJson': issuesJson,
+            'screenshotByIssue': screenshotByIssue,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _ida.Future<_ig60ukux.FeedbackRecording>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+}
+
 class _FeedbackEndpoint {
   _FeedbackEndpoint(
     this._endpointDispatch,
@@ -1035,6 +1165,41 @@ class _FeedbackEndpoint {
     });
   }
 
+  _ida.Future<String> screenshotUrl(
+    _ist.TestSessionBuilder sessionBuilder,
+    int recordingId,
+    String fileName,
+  ) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'feedback',
+            method: 'screenshotUrl',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'feedback',
+          methodName: 'screenshotUrl',
+          parameters: _ist.testObjectToJson({
+            'recordingId': recordingId,
+            'fileName': fileName,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _ida.Future<String>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
   _ida.Future<List<_ig60ukux.FeedbackRecording>> listRecordings(
     _ist.TestSessionBuilder sessionBuilder,
     int buildId,
@@ -1059,6 +1224,211 @@ class _FeedbackEndpoint {
                   _localCallContext.arguments,
                 )
                 as _ida.Future<List<_ig60ukux.FeedbackRecording>>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _ida.Future<List<_ig60ukux.FeedbackRecording>> listMyRecordings(
+    _ist.TestSessionBuilder sessionBuilder,
+  ) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'feedback',
+            method: 'listMyRecordings',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'feedback',
+          methodName: 'listMyRecordings',
+          parameters: _ist.testObjectToJson({}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _ida.Future<List<_ig60ukux.FeedbackRecording>>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _ida.Future<List<_idqt9vg1.FeedbackComment>> listComments(
+    _ist.TestSessionBuilder sessionBuilder,
+    int recordingId,
+  ) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'feedback',
+            method: 'listComments',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'feedback',
+          methodName: 'listComments',
+          parameters: _ist.testObjectToJson({'recordingId': recordingId}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _ida.Future<List<_idqt9vg1.FeedbackComment>>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _ida.Future<_idqt9vg1.FeedbackComment> addManualComment(
+    _ist.TestSessionBuilder sessionBuilder,
+    int recordingId,
+    String title,
+    String text,
+    String origin,
+  ) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'feedback',
+            method: 'addManualComment',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'feedback',
+          methodName: 'addManualComment',
+          parameters: _ist.testObjectToJson({
+            'recordingId': recordingId,
+            'title': title,
+            'text': text,
+            'origin': origin,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _ida.Future<_idqt9vg1.FeedbackComment>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _ida.Future<_idqt9vg1.FeedbackComment> editComment(
+    _ist.TestSessionBuilder sessionBuilder,
+    int id,
+    String title,
+    String text,
+    String severity,
+  ) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'feedback',
+            method: 'editComment',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'feedback',
+          methodName: 'editComment',
+          parameters: _ist.testObjectToJson({
+            'id': id,
+            'title': title,
+            'text': text,
+            'severity': severity,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _ida.Future<_idqt9vg1.FeedbackComment>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _ida.Future<_idqt9vg1.FeedbackComment> setResolved(
+    _ist.TestSessionBuilder sessionBuilder,
+    int id,
+    bool resolved,
+  ) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'feedback',
+            method: 'setResolved',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'feedback',
+          methodName: 'setResolved',
+          parameters: _ist.testObjectToJson({
+            'id': id,
+            'resolved': resolved,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _ida.Future<_idqt9vg1.FeedbackComment>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _ida.Future<void> deleteComment(
+    _ist.TestSessionBuilder sessionBuilder,
+    int id,
+  ) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'feedback',
+            method: 'deleteComment',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'feedback',
+          methodName: 'deleteComment',
+          parameters: _ist.testObjectToJson({'id': id}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _ida.Future<void>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();

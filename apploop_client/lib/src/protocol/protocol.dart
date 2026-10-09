@@ -12,6 +12,8 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:apploop_client/src/protocol/builds/app_build.dart' as _i6akcqfa;
+import 'package:apploop_client/src/protocol/feedback/feedback_comment.dart'
+    as _if7yc53q;
 import 'package:apploop_client/src/protocol/feedback/feedback_recording.dart'
     as _iiwaw2h8;
 import 'package:apploop_client/src/protocol/wishes/wish.dart' as _isssl1tb;
@@ -25,6 +27,7 @@ import 'builds/build_task.dart' as _ihkq2rbu;
 import 'builds/testflight_info.dart' as _ib1mtbgz;
 import 'feedback/feedback_comment.dart' as _idgl1o2e;
 import 'feedback/feedback_recording.dart' as _ig7ycgng;
+import 'feedback/recording_task.dart' as _iif2nqze;
 import 'greetings/greeting.dart' as _izw8z7ou;
 import 'store/store_app.dart' as _i9g2qfab;
 import 'wishes/wish.dart' as _ijn0eyds;
@@ -33,6 +36,7 @@ export 'builds/build_task.dart';
 export 'builds/testflight_info.dart';
 export 'feedback/feedback_comment.dart';
 export 'feedback/feedback_recording.dart';
+export 'feedback/recording_task.dart';
 export 'greetings/greeting.dart';
 export 'store/store_app.dart';
 export 'wishes/wish.dart';
@@ -87,6 +91,9 @@ class Protocol extends _isc.SerializationManager {
     if (t == _ig7ycgng.FeedbackRecording) {
       return _ig7ycgng.FeedbackRecording.fromJson(data) as T;
     }
+    if (t == _iif2nqze.RecordingTask) {
+      return _iif2nqze.RecordingTask.fromJson(data) as T;
+    }
     if (t == _izw8z7ou.Greeting) {
       return _izw8z7ou.Greeting.fromJson(data) as T;
     }
@@ -114,6 +121,10 @@ class Protocol extends _isc.SerializationManager {
       return (data != null ? _ig7ycgng.FeedbackRecording.fromJson(data) : null)
           as T;
     }
+    if (t == _isc.getType<_iif2nqze.RecordingTask?>()) {
+      return (data != null ? _iif2nqze.RecordingTask.fromJson(data) : null)
+          as T;
+    }
     if (t == _isc.getType<_izw8z7ou.Greeting?>()) {
       return (data != null ? _izw8z7ou.Greeting.fromJson(data) : null) as T;
     }
@@ -129,9 +140,18 @@ class Protocol extends _isc.SerializationManager {
               .toList()
           as T;
     }
+    if (t == List<String>) {
+      return (data as List).map((e) => deserialize<String>(e)).toList() as T;
+    }
     if (t == List<_iiwaw2h8.FeedbackRecording>) {
       return (data as List)
               .map((e) => deserialize<_iiwaw2h8.FeedbackRecording>(e))
+              .toList()
+          as T;
+    }
+    if (t == List<_if7yc53q.FeedbackComment>) {
+      return (data as List)
+              .map((e) => deserialize<_if7yc53q.FeedbackComment>(e))
               .toList()
           as T;
     }
@@ -157,6 +177,7 @@ class Protocol extends _isc.SerializationManager {
       _ib1mtbgz.TestflightInfo => 'TestflightInfo',
       _idgl1o2e.FeedbackComment => 'FeedbackComment',
       _ig7ycgng.FeedbackRecording => 'FeedbackRecording',
+      _iif2nqze.RecordingTask => 'RecordingTask',
       _izw8z7ou.Greeting => 'Greeting',
       _i9g2qfab.StoreApp => 'StoreApp',
       _ijn0eyds.AppWish => 'AppWish',
@@ -184,6 +205,8 @@ class Protocol extends _isc.SerializationManager {
         return 'FeedbackComment';
       case _ig7ycgng.FeedbackRecording():
         return 'FeedbackRecording';
+      case _iif2nqze.RecordingTask():
+        return 'RecordingTask';
       case _izw8z7ou.Greeting():
         return 'Greeting';
       case _i9g2qfab.StoreApp():
@@ -226,6 +249,9 @@ class Protocol extends _isc.SerializationManager {
     }
     if (dataClassName == 'FeedbackRecording') {
       return deserialize<_ig7ycgng.FeedbackRecording>(data['data']);
+    }
+    if (dataClassName == 'RecordingTask') {
+      return deserialize<_iif2nqze.RecordingTask>(data['data']);
     }
     if (dataClassName == 'Greeting') {
       return deserialize<_izw8z7ou.Greeting>(data['data']);

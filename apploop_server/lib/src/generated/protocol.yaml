@@ -20,13 +20,24 @@ builder:
   - claimBuildTask:
   - postBuildProgress:
   - completeBuild:
+feedbackBuilder:
+  - claimRecordingTask:
+  - getScreenshotUploadDescription:
+  - completeRecordingProcessing:
 feedback:
   - startRecording:
   - getVideoUploadDescription:
   - getAudioUploadDescription:
   - completeRecording:
   - downloadUrl:
+  - screenshotUrl:
   - listRecordings:
+  - listMyRecordings:
+  - listComments:
+  - addManualComment:
+  - editComment:
+  - setResolved:
+  - deleteComment:
 greeting:
   - hello:
 storeApp:
