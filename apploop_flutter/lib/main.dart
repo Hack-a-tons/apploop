@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:serverpod_auth_idp_flutter/serverpod_auth_idp_flutter.dart';
 
 import 'client.dart';
+import 'api/app_loop_api.dart';
 import 'screens/builds_screen.dart';
 import 'screens/coming_soon_screen.dart';
 import 'screens/sign_in_screen.dart';
@@ -67,6 +68,7 @@ class _AppLoopHomeState extends State<AppLoopHome> {
 
   @override
   Widget build(BuildContext context) {
+    final api = ServerAppLoopApi(client);
     return Scaffold(
       appBar: AppBar(
         title: const Text('AppLoop'),
@@ -80,11 +82,11 @@ class _AppLoopHomeState extends State<AppLoopHome> {
       ),
       body: IndexedStack(
         index: _index,
-        children: const [
-          WishesScreen(),
-          BuildsScreen(),
-          ComingSoonScreen(title: 'Feedback', feature: 'F7 (feedback)'),
-          ComingSoonScreen(title: 'Export', feature: 'F8 (export)'),
+        children: [
+          WishesScreen(api: api),
+          BuildsScreen(api: api),
+          const ComingSoonScreen(title: 'Feedback', feature: 'F7 (feedback)'),
+          const ComingSoonScreen(title: 'Export', feature: 'F8 (export)'),
         ],
       ),
       bottomNavigationBar: NavigationBar(

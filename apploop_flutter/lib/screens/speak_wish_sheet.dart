@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 
-import '../client.dart';
+import '../api/app_loop_api.dart';
 
 /// F1: speak a wish. The mic fills the fields live; the user can always
 /// edit by keyboard before saving. Falls back to pure typing when speech
 /// recognition is unavailable (web, denied permission, no mic).
 class SpeakWishSheet extends StatefulWidget {
-  const SpeakWishSheet({super.key});
+  final AppLoopApi api;
+
+  const SpeakWishSheet({super.key, required this.api});
 
   @override
   State<SpeakWishSheet> createState() => _SpeakWishSheetState();
@@ -72,7 +74,8 @@ class _SpeakWishSheetState extends State<SpeakWishSheet> {
       _listening = true;
     });
     await _speech.listen(
-      onResult: (result) {        if (_touched) return;
+      onResult: (result) {
+        if (_touched) return;
         final words = result.recognizedWords.trim();
         if (words.isEmpty) return;
         // First sentence becomes the title, the rest the details.
@@ -105,7 +108,7 @@ class _SpeakWishSheetState extends State<SpeakWishSheet> {
     }
     await _speech.stop();
     try {
-      await client.wish.createWish(title, _detailsController.text.trim());
+      await widget.api.createWish(title, _detailsController.text.trim());
       if (!mounted) return;
       Navigator.of(context).pop(true);
     } catch (e) {

@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:apploop_client/apploop_client.dart';
 import 'package:flutter/material.dart';
 
-import '../client.dart';
+import '../api/app_loop_api.dart';
 import 'build_detail_screen.dart';
 
 /// F2: wish detail with TestFlight provisioning status.
@@ -12,9 +12,10 @@ import 'build_detail_screen.dart';
 /// F2: wish detail with TestFlight provisioning status.
 /// Polls while the store app is being provisioned.
 class WishDetailScreen extends StatefulWidget {
+  final AppLoopApi api;
   final AppWish wish;
 
-  const WishDetailScreen({super.key, required this.wish});
+  const WishDetailScreen({super.key, required this.api, required this.wish});
 
   @override
   State<WishDetailScreen> createState() => _WishDetailScreenState();
@@ -43,7 +44,7 @@ class _WishDetailScreenState extends State<WishDetailScreen> {
 
   Future<void> _refresh() async {
     try {
-      final app = await client.storeApp.getStoreAppForWish(widget.wish.id!);
+      final app = await widget.api.getStoreAppForWish(widget.wish.id!);
       if (!mounted) return;
       setState(() {
         _storeApp = app;
@@ -80,7 +81,7 @@ class _WishDetailScreenState extends State<WishDetailScreen> {
       _error = null;
     });
     try {
-      final app = await client.storeApp.requestApp(widget.wish.id!);
+      final app = await widget.api.requestApp(widget.wish.id!);
       if (!mounted) return;
       setState(() {
         _storeApp = app;
@@ -102,12 +103,15 @@ class _WishDetailScreenState extends State<WishDetailScreen> {
       _error = null;
     });
     try {
-      final build = await client.build.requestBuild(widget.wish.id!);
+      final build = await widget.api.requestBuild(widget.wish.id!);
       if (!mounted) return;
       setState(() => _working = false);
       await Navigator.of(context).push(
         MaterialPageRoute(
-          builder: (context) => BuildDetailScreen(buildId: build.id!),
+          builder: (context) => BuildDetailScreen(
+            api: widget.api,
+            buildId: build.id!,
+          ),
         ),
       );
     } catch (e) {
@@ -199,7 +203,10 @@ class _WishDetailScreenState extends State<WishDetailScreen> {
                   label: const Text('Request TestFlight build'),
                 ),
                 const SizedBox(height: 12),
-                _TestflightLinkEditor(storeApp: _storeApp!),
+                _TestflightLinkEditor(
+                  api: widget.api,
+                  storeApp: _storeApp!,
+                ),
               ],
             ],
             if (_error != null) ...[
@@ -254,9 +261,10 @@ class _StatusRow extends StatelessWidget {
 
 /// Edits the public TestFlight invite link of a provisioned store app.
 class _TestflightLinkEditor extends StatefulWidget {
+  final AppLoopApi api;
   final StoreApp storeApp;
 
-  const _TestflightLinkEditor({required this.storeApp});
+  const _TestflightLinkEditor({required this.api, required this.storeApp});
 
   @override
   State<_TestflightLinkEditor> createState() => _TestflightLinkEditorState();
@@ -285,7 +293,7 @@ class _TestflightLinkEditorState extends State<_TestflightLinkEditor> {
       _message = null;
     });
     try {
-      final updated = await client.storeApp.setTestflightLink(
+      final updated = await widget.api.setTestflightLink(
         widget.storeApp.id!,
         _controller.text.trim(),
       );

@@ -1,13 +1,15 @@
 import 'package:apploop_client/apploop_client.dart';
 import 'package:flutter/material.dart';
 
-import '../client.dart';
+import '../api/app_loop_api.dart';
 import 'speak_wish_sheet.dart';
 import 'wish_detail_screen.dart';
 
 /// F0: wishes list. Voice input arrives in F1 — here wishes are typed.
 class WishesScreen extends StatefulWidget {
-  const WishesScreen({super.key});
+  final AppLoopApi api;
+
+  const WishesScreen({super.key, required this.api});
 
   @override
   State<WishesScreen> createState() => _WishesScreenState();
@@ -23,21 +25,21 @@ class _WishesScreenState extends State<WishesScreen> {
   }
 
   void _refresh() {
-    _wishesFuture = client.wish.listMyWishes();
+    _wishesFuture = widget.api.listMyWishes();
   }
 
   Future<void> _addWish() async {
     final saved = await showModalBottomSheet<bool>(
       context: context,
       isScrollControlled: true,
-      builder: (context) => const SpeakWishSheet(),
+      builder: (context) => SpeakWishSheet(api: widget.api),
     );
     if (saved == true && mounted) setState(_refresh);
   }
 
   Future<void> _deleteWish(AppWish wish) async {
     try {
-      await client.wish.deleteWish(wish.id!);
+      await widget.api.deleteWish(wish.id!);
       setState(_refresh);
     } catch (e) {
       if (!mounted) return;
@@ -127,7 +129,10 @@ class _WishesScreenState extends State<WishesScreen> {
                     onTap: () async {
                       await Navigator.of(context).push(
                         MaterialPageRoute(
-                          builder: (context) => WishDetailScreen(wish: wish),
+                          builder: (context) => WishDetailScreen(
+                            api: widget.api,
+                            wish: wish,
+                          ),
                         ),
                       );
                       if (mounted) setState(_refresh);

@@ -1,12 +1,14 @@
 import 'package:apploop_client/apploop_client.dart';
 import 'package:flutter/material.dart';
 
-import '../client.dart';
+import '../api/app_loop_api.dart';
 import 'build_detail_screen.dart';
 
 /// F4: all builds across the user's wishes, newest first.
 class BuildsScreen extends StatefulWidget {
-  const BuildsScreen({super.key});
+  final AppLoopApi api;
+
+  const BuildsScreen({super.key, required this.api});
 
   @override
   State<BuildsScreen> createState() => _BuildsScreenState();
@@ -22,7 +24,7 @@ class _BuildsScreenState extends State<BuildsScreen> {
   }
 
   void _refresh() {
-    _buildsFuture = client.build.listMyBuilds();
+    _buildsFuture = widget.api.listMyBuilds();
   }
 
   @override
@@ -77,8 +79,10 @@ class _BuildsScreenState extends State<BuildsScreen> {
                   onTap: () async {
                     await Navigator.of(context).push(
                       MaterialPageRoute(
-                        builder: (context) =>
-                            BuildDetailScreen(buildId: build.id!),
+                        builder: (context) => BuildDetailScreen(
+                          api: widget.api,
+                          buildId: build.id!,
+                        ),
                       ),
                     );
                     if (context.mounted) setState(_refresh);

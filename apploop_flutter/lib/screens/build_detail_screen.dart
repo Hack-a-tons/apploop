@@ -4,13 +4,18 @@ import 'package:apploop_client/apploop_client.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../client.dart';
+import '../api/app_loop_api.dart';
 
 /// F4: one build with live status and scrolling log.
 class BuildDetailScreen extends StatefulWidget {
+  final AppLoopApi api;
   final int buildId;
 
-  const BuildDetailScreen({super.key, required this.buildId});
+  const BuildDetailScreen({
+    super.key,
+    required this.api,
+    required this.buildId,
+  });
 
   @override
   State<BuildDetailScreen> createState() => _BuildDetailScreenState();
@@ -47,8 +52,8 @@ class _BuildDetailScreenState extends State<BuildDetailScreen> {
 
   Future<void> _refresh() async {
     try {
-      final build = await client.build.getBuild(widget.buildId);
-      final info = await client.build.testflightInfo(widget.buildId);
+      final build = await widget.api.getBuild(widget.buildId);
+      final info = await widget.api.testflightInfo(widget.buildId);
       if (!mounted) return;
       setState(() {
         _build = build;
@@ -85,7 +90,7 @@ class _BuildDetailScreenState extends State<BuildDetailScreen> {
       _error = null;
     });
     try {
-      final build = await client.build.retryBuild(widget.buildId);
+      final build = await widget.api.retryBuild(widget.buildId);
       if (!mounted) return;
       setState(() {
         _build = build;
@@ -106,8 +111,15 @@ class _BuildDetailScreenState extends State<BuildDetailScreen> {
     if (url.isEmpty) return;
     final uri = Uri.tryParse(url);
     if (uri == null) return;
-    final ok = await launchUrl(uri, mode: LaunchMode.externalApplication);
-    if (!ok && mounted) {
+    try {
+      final ok = await launchUrl(uri, mode: LaunchMode.externalApplication);
+      if (!ok && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Could not open TestFlight.')),
+        );
+      }
+    } catch (_) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Could not open TestFlight.')),
       );

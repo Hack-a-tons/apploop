@@ -51,3 +51,7 @@ jobs:
       - name: Run tests
         working-directory: apploop_server
         run: dart test
+
+      - name: Run Flutter widget tests
+        working-directory: apploop_flutter
+        run: flutter test
