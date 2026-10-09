@@ -179,6 +179,8 @@ class TestEndpoints {
 
   late final _BuilderEndpoint builder;
 
+  late final _ExportEndpoint export;
+
   late final _FeedbackBuilderEndpoint feedbackBuilder;
 
   late final _FeedbackEndpoint feedback;
@@ -210,6 +212,10 @@ class _InternalTestEndpoints extends TestEndpoints
       serializationManager,
     );
     builder = _BuilderEndpoint(
+      endpoints,
+      serializationManager,
+    );
+    export = _ExportEndpoint(
       endpoints,
       serializationManager,
     );
@@ -868,6 +874,48 @@ class _BuilderEndpoint {
                   _localCallContext.arguments,
                 )
                 as _ida.Future<void>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+}
+
+class _ExportEndpoint {
+  _ExportEndpoint(
+    this._endpointDispatch,
+    this._serializationManager,
+  );
+
+  final _is.EndpointDispatch _endpointDispatch;
+
+  final _is.SerializationManager _serializationManager;
+
+  _ida.Future<String> exportWish(
+    _ist.TestSessionBuilder sessionBuilder,
+    int wishId,
+  ) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'export',
+            method: 'exportWish',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'export',
+          methodName: 'exportWish',
+          parameters: _ist.testObjectToJson({'wishId': wishId}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _ida.Future<String>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();

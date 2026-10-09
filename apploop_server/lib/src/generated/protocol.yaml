@@ -20,6 +20,8 @@ builder:
   - claimBuildTask:
   - postBuildProgress:
   - completeBuild:
+export:
+  - exportWish:
 feedbackBuilder:
   - claimRecordingTask:
   - getScreenshotUploadDescription:

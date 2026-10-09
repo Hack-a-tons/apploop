@@ -40,6 +40,7 @@ dependencies:
   record: ^7.1.1
   serverpod_client: 4.0.4
   path_provider: ^2.1.6
+  share_plus: ^13.3.1
 
 dev_dependencies:
   # Used for agents to drive the app through the Dart MCP

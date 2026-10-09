@@ -6,6 +6,8 @@ abstract class AppLoopApi {
   Future<AppWish> createWish(String title, String description);
   Future<List<AppWish>> listMyWishes();
   Future<void> deleteWish(int id);
+  Future<AppWish> markSatisfied(int id);
+  Future<AppWish> reopenWish(int id);
 
   Future<StoreApp?> getStoreAppForWish(int wishId);
   Future<StoreApp> requestApp(int wishId);
@@ -13,6 +15,7 @@ abstract class AppLoopApi {
 
   Future<AppBuild> requestBuild(int wishId);
   Future<List<AppBuild>> listMyBuilds();
+  Future<List<AppBuild>> getBuildsForWish(int wishId);
   Future<AppBuild> getBuild(int id);
   Future<AppBuild> retryBuild(int id);
   Future<TestflightInfo> testflightInfo(int id);
@@ -41,6 +44,8 @@ abstract class AppLoopApi {
   );
   Future<FeedbackComment> setResolved(int id, bool resolved);
   Future<void> deleteComment(int id);
+
+  Future<String> exportWish(int wishId);
 }
 
 /// Live implementation over the generated Serverpod client.
@@ -60,6 +65,12 @@ class ServerAppLoopApi implements AppLoopApi {
   Future<void> deleteWish(int id) => _client.wish.deleteWish(id);
 
   @override
+  Future<AppWish> markSatisfied(int id) => _client.wish.markSatisfied(id);
+
+  @override
+  Future<AppWish> reopenWish(int id) => _client.wish.reopenWish(id);
+
+  @override
   Future<StoreApp?> getStoreAppForWish(int wishId) =>
       _client.storeApp.getStoreAppForWish(wishId);
 
@@ -77,6 +88,10 @@ class ServerAppLoopApi implements AppLoopApi {
 
   @override
   Future<List<AppBuild>> listMyBuilds() => _client.build.listMyBuilds();
+
+  @override
+  Future<List<AppBuild>> getBuildsForWish(int wishId) =>
+      _client.build.getBuildsForWish(wishId);
 
   @override
   Future<AppBuild> getBuild(int id) => _client.build.getBuild(id);
@@ -146,4 +161,7 @@ class ServerAppLoopApi implements AppLoopApi {
 
   @override
   Future<void> deleteComment(int id) => _client.feedback.deleteComment(id);
+
+  @override
+  Future<String> exportWish(int wishId) => _client.export.exportWish(wishId);
 }

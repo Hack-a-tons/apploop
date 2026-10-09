@@ -20,6 +20,7 @@ import '../auth/email_idp_endpoint.dart' as _iuc1hd5t;
 import '../auth/jwt_refresh_endpoint.dart' as _inwq3ztq;
 import '../builds/build_endpoint.dart' as _iu98uiq9;
 import '../builds/builder_endpoint.dart' as _infkm04t;
+import '../export/export_endpoint.dart' as _ir5wosjr;
 import '../feedback/feedback_builder_endpoint.dart' as _i9ct8h7j;
 import '../feedback/feedback_endpoint.dart' as _i3n4p88h;
 import '../greetings/greeting_endpoint.dart' as _il624ik7;
@@ -53,6 +54,12 @@ class Endpoints extends _is.EndpointDispatch {
         ..initialize(
           server,
           'builder',
+          null,
+        ),
+      'export': _ir5wosjr.ExportEndpoint()
+        ..initialize(
+          server,
+          'export',
           null,
         ),
       'feedbackBuilder': _i9ct8h7j.FeedbackBuilderEndpoint()
@@ -504,6 +511,31 @@ class Endpoints extends _is.EndpointDispatch {
                     params['succeeded'],
                     params['testflightState'],
                     params['logAppend'],
+                  ),
+        ),
+      },
+    );
+    connectors['export'] = _is.EndpointConnector(
+      name: 'export',
+      endpoint: endpoints['export']!,
+      methodConnectors: {
+        'exportWish': _is.MethodConnector(
+          name: 'exportWish',
+          params: {
+            'wishId': _is.ParameterDescription(
+              name: 'wishId',
+              type: _is.getType<int>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['export'] as _ir5wosjr.ExportEndpoint).exportWish(
+                    session,
+                    params['wishId'],
                   ),
         ),
       },

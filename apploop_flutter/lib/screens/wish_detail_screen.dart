@@ -22,6 +22,8 @@ class WishDetailScreen extends StatefulWidget {
 }
 
 class _WishDetailScreenState extends State<WishDetailScreen> {
+  late AppWish _wish;
+  List<AppBuild> _builds = [];
   StoreApp? _storeApp;
   bool _loading = true;
   bool _working = false;
@@ -33,6 +35,7 @@ class _WishDetailScreenState extends State<WishDetailScreen> {
   @override
   void initState() {
     super.initState();
+    _wish = widget.wish;
     _refresh();
   }
 
@@ -44,10 +47,14 @@ class _WishDetailScreenState extends State<WishDetailScreen> {
 
   Future<void> _refresh() async {
     try {
-      final app = await widget.api.getStoreAppForWish(widget.wish.id!);
+      final results = await Future.wait([
+        widget.api.getStoreAppForWish(widget.wish.id!),
+        widget.api.getBuildsForWish(widget.wish.id!),
+      ]);
       if (!mounted) return;
       setState(() {
-        _storeApp = app;
+        _storeApp = results[0] as StoreApp?;
+        _builds = (results[1] as List<AppBuild>);
         _loading = false;
         _error = null;
       });
@@ -56,7 +63,7 @@ class _WishDetailScreenState extends State<WishDetailScreen> {
       if (!mounted) return;
       setState(() {
         _loading = false;
-        _error = 'Could not load store app: $e';
+        _error = 'Could not load: $e';
       });
     }
   }
@@ -114,11 +121,35 @@ class _WishDetailScreenState extends State<WishDetailScreen> {
           ),
         ),
       );
+      if (mounted) _refresh();
     } catch (e) {
       if (!mounted) return;
       setState(() {
         _working = false;
         _error = 'Build request failed: $e';
+      });
+    }
+  }
+
+  Future<void> _toggleSatisfied() async {
+    setState(() {
+      _working = true;
+      _error = null;
+    });
+    try {
+      final wish = _wish.status == 'satisfied'
+          ? await widget.api.reopenWish(widget.wish.id!)
+          : await widget.api.markSatisfied(widget.wish.id!);
+      if (!mounted) return;
+      setState(() {
+        _wish = wish;
+        _working = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _working = false;
+        _error = 'Could not update: $e';
       });
     }
   }
@@ -134,12 +165,22 @@ class _WishDetailScreenState extends State<WishDetailScreen> {
           padding: const EdgeInsets.all(16),
           children: [
             Text(
-              widget.wish.descriptionText.isEmpty
+              _wish.descriptionText.isEmpty
                   ? 'No details.'
-                  : widget.wish.descriptionText,
+                  : _wish.descriptionText,
             ),
             const SizedBox(height: 8),
-            Text('Wish status: ${widget.wish.status}'),
+            Row(
+              children: [
+                Expanded(child: Text('Wish status: ${_wish.status}')),
+                TextButton(
+                  onPressed: _working ? null : _toggleSatisfied,
+                  child: Text(
+                    _wish.status == 'satisfied' ? 'Reopen' : 'Satisfied',
+                  ),
+                ),
+              ],
+            ),
             const Divider(height: 32),
             Text(
               'TestFlight app',
@@ -209,6 +250,36 @@ class _WishDetailScreenState extends State<WishDetailScreen> {
                 ),
               ],
             ],
+            const Divider(height: 32),
+            Text(
+              'Iterations (${_builds.length})',
+              style: theme.textTheme.titleMedium,
+            ),
+            const SizedBox(height: 8),
+            if (_builds.isEmpty)
+              const Text('No builds yet for this wish.')
+            else
+              for (final build in _builds)
+                ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: const Icon(Icons.build),
+                  title: Text(
+                    'Iteration ${build.iteration} · build ${build.buildNumber}',
+                  ),
+                  subtitle: Text('Status: ${build.status}'),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () async {
+                    await Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => BuildDetailScreen(
+                          api: widget.api,
+                          buildId: build.id!,
+                        ),
+                      ),
+                    );
+                    if (context.mounted) _refresh();
+                  },
+                ),
             if (_error != null) ...[
               const SizedBox(height: 12),
               Text(

@@ -382,6 +382,25 @@ class EndpointBuilder extends _isc.EndpointRef {
   );
 }
 
+/// Export: the whole loop of a wish as one Markdown document.
+/// Owner-checked like everything else; nothing leaves the server except
+/// to the user who owns it.
+/// {@category Endpoint}
+class EndpointExport extends _isc.EndpointRef {
+  EndpointExport(_isc.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'export';
+
+  /// Returns the Markdown export of a wish owned by the caller.
+  _ida.Future<String> exportWish(int wishId) =>
+      caller.callServerEndpoint<String>(
+        'export',
+        'exportWish',
+        {'wishId': wishId},
+      );
+}
+
 /// Builder worker API for feedback processing. No user login — every
 /// method takes the shared builder token, which must match
 /// `builderToken` in `config/passwords.yaml` (or the
@@ -771,6 +790,7 @@ class Client extends _isc.ServerpodClientShared {
     jwtRefresh = EndpointJwtRefresh(this);
     build = EndpointBuild(this);
     builder = EndpointBuilder(this);
+    export = EndpointExport(this);
     feedbackBuilder = EndpointFeedbackBuilder(this);
     feedback = EndpointFeedback(this);
     greeting = EndpointGreeting(this);
@@ -786,6 +806,8 @@ class Client extends _isc.ServerpodClientShared {
   late final EndpointBuild build;
 
   late final EndpointBuilder builder;
+
+  late final EndpointExport export;
 
   late final EndpointFeedbackBuilder feedbackBuilder;
 
@@ -805,6 +827,7 @@ class Client extends _isc.ServerpodClientShared {
     'jwtRefresh': jwtRefresh,
     'build': build,
     'builder': builder,
+    'export': export,
     'feedbackBuilder': feedbackBuilder,
     'feedback': feedback,
     'greeting': greeting,

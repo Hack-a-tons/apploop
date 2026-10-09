@@ -4,7 +4,7 @@ import 'package:serverpod_auth_idp_flutter/serverpod_auth_idp_flutter.dart';
 import 'client.dart';
 import 'api/app_loop_api.dart';
 import 'screens/builds_screen.dart';
-import 'screens/coming_soon_screen.dart';
+import 'screens/export_screen.dart';
 import 'screens/feedback_screen.dart';
 import 'screens/sign_in_screen.dart';
 import 'screens/wishes_screen.dart';
@@ -87,7 +87,7 @@ class _AppLoopHomeState extends State<AppLoopHome> {
           WishesScreen(api: api),
           BuildsScreen(api: api),
           FeedbackScreen(api: api),
-          const ComingSoonScreen(title: 'Export', feature: 'F8 (export)'),
+          ExportScreen(api: api),
         ],
       ),
       bottomNavigationBar: NavigationBar(

@@ -57,4 +57,23 @@ void main() {
 
     expect(find.text('Retry provisioning'), findsOneWidget);
   });
+
+  testWidgets('satisfy button calls the api', (tester) async {
+    final api = FakeAppLoopApi();
+    await _pumpWish(tester, api);
+
+    expect(find.text('Satisfied'), findsOneWidget);
+    await tester.tap(find.text('Satisfied'));
+    await tester.pumpAndSettle();
+
+    expect(api.calls, contains('markSatisfied'));
+  });
+
+  testWidgets('iterations list navigates to build detail', (tester) async {
+    final api = FakeAppLoopApi();
+    await _pumpWish(tester, api);
+
+    expect(find.text('Iterations (0)'), findsOneWidget);
+    expect(find.text('No builds yet for this wish.'), findsOneWidget);
+  });
 }

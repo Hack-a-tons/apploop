@@ -94,6 +94,10 @@ class FakeAppLoopApi implements AppLoopApi {
       _call('listMyBuilds', () async => builds);
 
   @override
+  Future<List<AppBuild>> getBuildsForWish(int wishId) =>
+      _call('getBuildsForWish', () async => builds);
+
+  @override
   Future<AppBuild> getBuild(int id) => _call('getBuild', () async {
     return builds.firstWhere((b) => b.id == id, orElse: () => testBuild());
   });
@@ -215,4 +219,22 @@ class FakeAppLoopApi implements AppLoopApi {
   Future<void> deleteComment(int id) => _call('deleteComment', () async {
     comments = comments.where((c) => c.id != id).toList();
   });
+
+  @override
+  Future<AppWish> markSatisfied(int id) => _call('markSatisfied', () async {
+    final updated = testWish(id: id, title: 'Satisfied');
+    wishes = wishes.map((w) => w.id == id ? updated : w).toList();
+    return updated;
+  });
+
+  @override
+  Future<AppWish> reopenWish(int id) => _call('reopenWish', () async {
+    final updated = testWish(id: id, title: 'Reopened');
+    wishes = wishes.map((w) => w.id == id ? updated : w).toList();
+    return updated;
+  });
+
+  @override
+  Future<String> exportWish(int wishId) =>
+      _call('exportWish', () async => '# Export of wish $wishId');
 }
