@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../api/app_loop_api.dart';
+import 'test_session_screen.dart';
 
 /// F4: one build with live status and scrolling log.
 class BuildDetailScreen extends StatefulWidget {
@@ -190,6 +191,21 @@ class _BuildDetailScreenState extends State<BuildDetailScreen> {
                         onPressed: _working ? null : _retry,
                         icon: const Icon(Icons.refresh),
                         label: const Text('Retry build'),
+                      ),
+                    ],
+                    if (_build!.status == 'ready') ...[
+                      const SizedBox(height: 12),
+                      FilledButton.tonalIcon(
+                        onPressed: () => Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => TestSessionScreen(
+                              api: widget.api,
+                              buildId: widget.buildId,
+                            ),
+                          ),
+                        ),
+                        icon: const Icon(Icons.science),
+                        label: const Text('Test this build'),
                       ),
                     ],
                   ],

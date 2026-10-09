@@ -20,6 +20,13 @@ builder:
   - claimBuildTask:
   - postBuildProgress:
   - completeBuild:
+feedback:
+  - startRecording:
+  - getVideoUploadDescription:
+  - getAudioUploadDescription:
+  - completeRecording:
+  - downloadUrl:
+  - listRecordings:
 greeting:
   - hello:
 storeApp:

@@ -19,6 +19,8 @@ import 'package:apploop_server/src/generated/builds/build_task.dart'
     as _i118q4yp;
 import 'package:apploop_server/src/generated/builds/testflight_info.dart'
     as _iteistin;
+import 'package:apploop_server/src/generated/feedback/feedback_recording.dart'
+    as _ig60ukux;
 import 'package:apploop_server/src/generated/future_calls.dart' as _i1nmt0s2;
 import 'package:apploop_server/src/generated/future_calls_generated_models/provision_app_future_call_provision_app_model.dart'
     as _iiej2ygv;
@@ -173,6 +175,8 @@ class TestEndpoints {
 
   late final _BuilderEndpoint builder;
 
+  late final _FeedbackEndpoint feedback;
+
   late final _GreetingEndpoint greeting;
 
   late final _StoreAppEndpoint storeApp;
@@ -200,6 +204,10 @@ class _InternalTestEndpoints extends TestEndpoints
       serializationManager,
     );
     builder = _BuilderEndpoint(
+      endpoints,
+      serializationManager,
+    );
+    feedback = _FeedbackEndpoint(
       endpoints,
       serializationManager,
     );
@@ -850,6 +858,207 @@ class _BuilderEndpoint {
                   _localCallContext.arguments,
                 )
                 as _ida.Future<void>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+}
+
+class _FeedbackEndpoint {
+  _FeedbackEndpoint(
+    this._endpointDispatch,
+    this._serializationManager,
+  );
+
+  final _is.EndpointDispatch _endpointDispatch;
+
+  final _is.SerializationManager _serializationManager;
+
+  _ida.Future<_ig60ukux.FeedbackRecording> startRecording(
+    _ist.TestSessionBuilder sessionBuilder,
+    int buildId,
+  ) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'feedback',
+            method: 'startRecording',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'feedback',
+          methodName: 'startRecording',
+          parameters: _ist.testObjectToJson({'buildId': buildId}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _ida.Future<_ig60ukux.FeedbackRecording>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _ida.Future<String> getVideoUploadDescription(
+    _ist.TestSessionBuilder sessionBuilder,
+    int recordingId,
+  ) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'feedback',
+            method: 'getVideoUploadDescription',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'feedback',
+          methodName: 'getVideoUploadDescription',
+          parameters: _ist.testObjectToJson({'recordingId': recordingId}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _ida.Future<String>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _ida.Future<String> getAudioUploadDescription(
+    _ist.TestSessionBuilder sessionBuilder,
+    int recordingId,
+  ) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'feedback',
+            method: 'getAudioUploadDescription',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'feedback',
+          methodName: 'getAudioUploadDescription',
+          parameters: _ist.testObjectToJson({'recordingId': recordingId}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _ida.Future<String>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _ida.Future<_ig60ukux.FeedbackRecording> completeRecording(
+    _ist.TestSessionBuilder sessionBuilder,
+    int recordingId,
+  ) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'feedback',
+            method: 'completeRecording',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'feedback',
+          methodName: 'completeRecording',
+          parameters: _ist.testObjectToJson({'recordingId': recordingId}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _ida.Future<_ig60ukux.FeedbackRecording>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _ida.Future<String> downloadUrl(
+    _ist.TestSessionBuilder sessionBuilder,
+    int recordingId,
+    String kind,
+  ) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'feedback',
+            method: 'downloadUrl',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'feedback',
+          methodName: 'downloadUrl',
+          parameters: _ist.testObjectToJson({
+            'recordingId': recordingId,
+            'kind': kind,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _ida.Future<String>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _ida.Future<List<_ig60ukux.FeedbackRecording>> listRecordings(
+    _ist.TestSessionBuilder sessionBuilder,
+    int buildId,
+  ) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'feedback',
+            method: 'listRecordings',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'feedback',
+          methodName: 'listRecordings',
+          parameters: _ist.testObjectToJson({'buildId': buildId}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _ida.Future<List<_ig60ukux.FeedbackRecording>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();

@@ -94,7 +94,7 @@ abstract class FeedbackRecording
   /// [{title, severity, timestamps, quote, fix}].
   String issuesJson;
 
-  /// Processing status: uploaded, processing, ready, failed.
+  /// Processing status: uploading, uploaded, processing, ready, failed.
   String status;
 
   /// Returns a shallow copy of this [FeedbackRecording]

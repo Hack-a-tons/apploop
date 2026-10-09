@@ -117,4 +117,43 @@ class FakeAppLoopApi implements AppLoopApi {
               installUrl: '',
             );
       });
+
+  List<FeedbackRecording> recordings = [];
+
+  FeedbackRecording testRecording({int id = 1, String status = 'uploaded'}) =>
+      FeedbackRecording(
+        id: id,
+        buildId: 1,
+        authUserId: _fakeUser,
+        videoPath: 'feedback/x/1/video.mov',
+        status: status,
+      );
+
+  @override
+  Future<FeedbackRecording> startRecording(int buildId) =>
+      _call('startRecording', () async {
+        final recording = testRecording(id: recordings.length + 1);
+        recordings = [...recordings, recording];
+        return recording;
+      });
+
+  @override
+  Future<String> videoUploadDescription(int recordingId) =>
+      _call('videoUploadDescription', () async => 'video-desc');
+
+  @override
+  Future<String> audioUploadDescription(int recordingId) =>
+      _call('audioUploadDescription', () async => 'audio-desc');
+
+  @override
+  Future<FeedbackRecording> completeRecording(int recordingId) =>
+      _call('completeRecording', () async => testRecording(id: recordingId));
+
+  @override
+  Future<List<FeedbackRecording>> listRecordings(int buildId) =>
+      _call('listRecordings', () async => recordings);
+
+  @override
+  Future<String> recordingDownloadUrl(int recordingId, String kind) =>
+      _call('recordingDownloadUrl', () async => 'https://example.com/$kind');
 }

@@ -97,7 +97,7 @@ abstract class FeedbackRecording
   /// [{title, severity, timestamps, quote, fix}].
   String issuesJson;
 
-  /// Processing status: uploaded, processing, ready, failed.
+  /// Processing status: uploading, uploaded, processing, ready, failed.
   String status;
 
   @override
@@ -332,7 +332,7 @@ class FeedbackRecordingTable extends _is.Table<int?> {
   /// [{title, severity, timestamps, quote, fix}].
   late final _is.ColumnString issuesJson;
 
-  /// Processing status: uploaded, processing, ready, failed.
+  /// Processing status: uploading, uploaded, processing, ready, failed.
   late final _is.ColumnString status;
 
   _inhfbybr.AppBuildTable get build {

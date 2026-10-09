@@ -16,6 +16,8 @@ import 'package:apploop_client/src/protocol/builds/build_task.dart'
     as _i0ot5ooz;
 import 'package:apploop_client/src/protocol/builds/testflight_info.dart'
     as _idjr27zf;
+import 'package:apploop_client/src/protocol/feedback/feedback_recording.dart'
+    as _iiwaw2h8;
 import 'package:apploop_client/src/protocol/greetings/greeting.dart'
     as _i3hjhujy;
 import 'package:apploop_client/src/protocol/store/store_app.dart' as _iv8bwsvn;
@@ -376,6 +378,75 @@ class EndpointBuilder extends _isc.EndpointRef {
   );
 }
 
+/// Test recordings: screen videos with spoken comments, plus audio-only
+/// notes. Flow: `startRecording` → upload video and/or audio with the
+/// issued descriptions → `completeRecording` → (F7) processing.
+///
+/// Paths are always derived server-side (`feedback/<user>/<id>/…`);
+/// clients never choose paths or storage ids.
+/// {@category Endpoint}
+class EndpointFeedback extends _isc.EndpointRef {
+  EndpointFeedback(_isc.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'feedback';
+
+  /// Starts a recording for a build owned by the caller.
+  _ida.Future<_iiwaw2h8.FeedbackRecording> startRecording(int buildId) =>
+      caller.callServerEndpoint<_iiwaw2h8.FeedbackRecording>(
+        'feedback',
+        'startRecording',
+        {'buildId': buildId},
+      );
+
+  /// Upload description for the screen video (.mov/.mp4, ≤ 500 MB).
+  _ida.Future<String> getVideoUploadDescription(int recordingId) =>
+      caller.callServerEndpoint<String>(
+        'feedback',
+        'getVideoUploadDescription',
+        {'recordingId': recordingId},
+      );
+
+  /// Upload description for the audio note (.m4a, ≤ 25 MB).
+  _ida.Future<String> getAudioUploadDescription(int recordingId) =>
+      caller.callServerEndpoint<String>(
+        'feedback',
+        'getAudioUploadDescription',
+        {'recordingId': recordingId},
+      );
+
+  /// Marks the upload done after verifying at least one file landed.
+  /// Throws when nothing was uploaded (client should retry the upload).
+  _ida.Future<_iiwaw2h8.FeedbackRecording> completeRecording(int recordingId) =>
+      caller.callServerEndpoint<_iiwaw2h8.FeedbackRecording>(
+        'feedback',
+        'completeRecording',
+        {'recordingId': recordingId},
+      );
+
+  /// Time-limited playback URL for the video or audio (`kind` is
+  /// `video` or `audio`).
+  _ida.Future<String> downloadUrl(
+    int recordingId,
+    String kind,
+  ) => caller.callServerEndpoint<String>(
+    'feedback',
+    'downloadUrl',
+    {
+      'recordingId': recordingId,
+      'kind': kind,
+    },
+  );
+
+  /// Lists the caller's recordings for one owned build, newest first.
+  _ida.Future<List<_iiwaw2h8.FeedbackRecording>> listRecordings(int buildId) =>
+      caller.callServerEndpoint<List<_iiwaw2h8.FeedbackRecording>>(
+        'feedback',
+        'listRecordings',
+        {'buildId': buildId},
+      );
+}
+
 /// This is an example endpoint that returns a greeting message through
 /// its [hello] method.
 /// {@category Endpoint}
@@ -551,6 +622,7 @@ class Client extends _isc.ServerpodClientShared {
     jwtRefresh = EndpointJwtRefresh(this);
     build = EndpointBuild(this);
     builder = EndpointBuilder(this);
+    feedback = EndpointFeedback(this);
     greeting = EndpointGreeting(this);
     storeApp = EndpointStoreApp(this);
     wish = EndpointWish(this);
@@ -564,6 +636,8 @@ class Client extends _isc.ServerpodClientShared {
   late final EndpointBuild build;
 
   late final EndpointBuilder builder;
+
+  late final EndpointFeedback feedback;
 
   late final EndpointGreeting greeting;
 
@@ -579,6 +653,7 @@ class Client extends _isc.ServerpodClientShared {
     'jwtRefresh': jwtRefresh,
     'build': build,
     'builder': builder,
+    'feedback': feedback,
     'greeting': greeting,
     'storeApp': storeApp,
     'wish': wish,

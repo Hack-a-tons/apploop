@@ -12,6 +12,8 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:apploop_client/src/protocol/builds/app_build.dart' as _i6akcqfa;
+import 'package:apploop_client/src/protocol/feedback/feedback_recording.dart'
+    as _iiwaw2h8;
 import 'package:apploop_client/src/protocol/wishes/wish.dart' as _isssl1tb;
 import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
     as _iacc;
@@ -124,6 +126,12 @@ class Protocol extends _isc.SerializationManager {
     if (t == List<_i6akcqfa.AppBuild>) {
       return (data as List)
               .map((e) => deserialize<_i6akcqfa.AppBuild>(e))
+              .toList()
+          as T;
+    }
+    if (t == List<_iiwaw2h8.FeedbackRecording>) {
+      return (data as List)
+              .map((e) => deserialize<_iiwaw2h8.FeedbackRecording>(e))
               .toList()
           as T;
     }

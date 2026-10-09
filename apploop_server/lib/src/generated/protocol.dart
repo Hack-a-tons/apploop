@@ -13,6 +13,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:apploop_server/src/generated/builds/app_build.dart'
     as _ia2egj0z;
+import 'package:apploop_server/src/generated/feedback/feedback_recording.dart'
+    as _ig60ukux;
 import 'package:apploop_server/src/generated/wishes/wish.dart' as _it3mghal;
 import 'package:serverpod/protocol.dart' as _isp;
 import 'package:serverpod/serverpod.dart' as _is;
@@ -654,6 +656,12 @@ class Protocol extends _is.DatabaseSerializationManager {
     if (t == List<_ia2egj0z.AppBuild>) {
       return (data as List)
               .map((e) => deserialize<_ia2egj0z.AppBuild>(e))
+              .toList()
+          as T;
+    }
+    if (t == List<_ig60ukux.FeedbackRecording>) {
+      return (data as List)
+              .map((e) => deserialize<_ig60ukux.FeedbackRecording>(e))
               .toList()
           as T;
     }

@@ -13,7 +13,7 @@ fields:
   ### Extracted issues as JSON list
   ### [{title, severity, timestamps, quote, fix}].
   issuesJson: String, default='[]'
-  ### Processing status: uploaded, processing, ready, failed.
+  ### Processing status: uploading, uploaded, processing, ready, failed.
   status: String, default='uploaded'
 indexes:
   feedback_recording_build_idx:

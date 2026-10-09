@@ -20,6 +20,7 @@ import '../auth/email_idp_endpoint.dart' as _iuc1hd5t;
 import '../auth/jwt_refresh_endpoint.dart' as _inwq3ztq;
 import '../builds/build_endpoint.dart' as _iu98uiq9;
 import '../builds/builder_endpoint.dart' as _infkm04t;
+import '../feedback/feedback_endpoint.dart' as _i3n4p88h;
 import '../greetings/greeting_endpoint.dart' as _il624ik7;
 import '../store/store_app_endpoint.dart' as _iz4r4dl0;
 import '../wishes/wish_endpoint.dart' as _i8qgaqst;
@@ -51,6 +52,12 @@ class Endpoints extends _is.EndpointDispatch {
         ..initialize(
           server,
           'builder',
+          null,
+        ),
+      'feedback': _i3n4p88h.FeedbackEndpoint()
+        ..initialize(
+          server,
+          'feedback',
           null,
         ),
       'greeting': _il624ik7.GreetingEndpoint()
@@ -490,6 +497,132 @@ class Endpoints extends _is.EndpointDispatch {
                     params['succeeded'],
                     params['testflightState'],
                     params['logAppend'],
+                  ),
+        ),
+      },
+    );
+    connectors['feedback'] = _is.EndpointConnector(
+      name: 'feedback',
+      endpoint: endpoints['feedback']!,
+      methodConnectors: {
+        'startRecording': _is.MethodConnector(
+          name: 'startRecording',
+          params: {
+            'buildId': _is.ParameterDescription(
+              name: 'buildId',
+              type: _is.getType<int>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['feedback'] as _i3n4p88h.FeedbackEndpoint)
+                  .startRecording(
+                    session,
+                    params['buildId'],
+                  ),
+        ),
+        'getVideoUploadDescription': _is.MethodConnector(
+          name: 'getVideoUploadDescription',
+          params: {
+            'recordingId': _is.ParameterDescription(
+              name: 'recordingId',
+              type: _is.getType<int>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['feedback'] as _i3n4p88h.FeedbackEndpoint)
+                  .getVideoUploadDescription(
+                    session,
+                    params['recordingId'],
+                  ),
+        ),
+        'getAudioUploadDescription': _is.MethodConnector(
+          name: 'getAudioUploadDescription',
+          params: {
+            'recordingId': _is.ParameterDescription(
+              name: 'recordingId',
+              type: _is.getType<int>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['feedback'] as _i3n4p88h.FeedbackEndpoint)
+                  .getAudioUploadDescription(
+                    session,
+                    params['recordingId'],
+                  ),
+        ),
+        'completeRecording': _is.MethodConnector(
+          name: 'completeRecording',
+          params: {
+            'recordingId': _is.ParameterDescription(
+              name: 'recordingId',
+              type: _is.getType<int>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['feedback'] as _i3n4p88h.FeedbackEndpoint)
+                  .completeRecording(
+                    session,
+                    params['recordingId'],
+                  ),
+        ),
+        'downloadUrl': _is.MethodConnector(
+          name: 'downloadUrl',
+          params: {
+            'recordingId': _is.ParameterDescription(
+              name: 'recordingId',
+              type: _is.getType<int>(),
+              nullable: false,
+            ),
+            'kind': _is.ParameterDescription(
+              name: 'kind',
+              type: _is.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['feedback'] as _i3n4p88h.FeedbackEndpoint)
+                  .downloadUrl(
+                    session,
+                    params['recordingId'],
+                    params['kind'],
+                  ),
+        ),
+        'listRecordings': _is.MethodConnector(
+          name: 'listRecordings',
+          params: {
+            'buildId': _is.ParameterDescription(
+              name: 'buildId',
+              type: _is.getType<int>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['feedback'] as _i3n4p88h.FeedbackEndpoint)
+                  .listRecordings(
+                    session,
+                    params['buildId'],
                   ),
         ),
       },

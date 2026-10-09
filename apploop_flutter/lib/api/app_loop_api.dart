@@ -16,6 +16,13 @@ abstract class AppLoopApi {
   Future<AppBuild> getBuild(int id);
   Future<AppBuild> retryBuild(int id);
   Future<TestflightInfo> testflightInfo(int id);
+
+  Future<FeedbackRecording> startRecording(int buildId);
+  Future<String> videoUploadDescription(int recordingId);
+  Future<String> audioUploadDescription(int recordingId);
+  Future<FeedbackRecording> completeRecording(int recordingId);
+  Future<List<FeedbackRecording>> listRecordings(int buildId);
+  Future<String> recordingDownloadUrl(int recordingId, String kind);
 }
 
 /// Live implementation over the generated Serverpod client.
@@ -62,4 +69,28 @@ class ServerAppLoopApi implements AppLoopApi {
   @override
   Future<TestflightInfo> testflightInfo(int id) =>
       _client.build.testflightInfo(id);
+
+  @override
+  Future<FeedbackRecording> startRecording(int buildId) =>
+      _client.feedback.startRecording(buildId);
+
+  @override
+  Future<String> videoUploadDescription(int recordingId) =>
+      _client.feedback.getVideoUploadDescription(recordingId);
+
+  @override
+  Future<String> audioUploadDescription(int recordingId) =>
+      _client.feedback.getAudioUploadDescription(recordingId);
+
+  @override
+  Future<FeedbackRecording> completeRecording(int recordingId) =>
+      _client.feedback.completeRecording(recordingId);
+
+  @override
+  Future<List<FeedbackRecording>> listRecordings(int buildId) =>
+      _client.feedback.listRecordings(buildId);
+
+  @override
+  Future<String> recordingDownloadUrl(int recordingId, String kind) =>
+      _client.feedback.downloadUrl(recordingId, kind);
 }
