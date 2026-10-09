@@ -56,4 +56,21 @@ If the user asks you to test the app:
 
 The app is launched from `v403_flutter/lib/driver.dart`, which starts the Flutter driver extension with text entry emulation turned off so the app stays usable by hand. To let the driver type, set `enableTextEntryEmulation: true` there and `hot_restart` the app.
 
-IMPORTANT: After building the first version of the app, update this AGENTS.md file with information about the app we're building. KEEP the info about the MCP server and the checklist. Remove this paragraph.
+# AppLoop — what we're building
+
+Voice-driven app-creation loop for the Serverpod hackathon
+(deadline 14 Oct 2026, 23:59 CEST). Talk a wish → server provisions a
+real App Store Connect app → Mac builder worker generates/builds/uploads
+to TestFlight → test with screen recordings + voice notes → `explain.sh
+debug` extracts issues → review/edit/resolve → iterate → satisfied →
+Markdown export. See `PLAN.md` (features F0–F9) and `README.md`.
+
+Key code: `apploop_server/lib/src/{wishes,store,builds,feedback,export}/`
+(endpoints + spy models), `tool/mac_builder.dart` (polls Build +
+Recording tasks; fastlane templates in `tool/mac_builder/fastlane/`,
+env-only auth), `apploop_flutter/lib/screens/` (UI behind `AppLoopApi`
+in `lib/api/`, faked in widget tests). Secrets live ONLY in
+`config/passwords.yaml` (git-ignored: `builderToken`, `ascKeyId`,
+`ascIssuerId`, `ascPrivateKey`) and builder env (`BUILDER_TOKEN`,
+`ASC_*`, `APPLE_TEAM_ID`). Never commit Apple credentials, key ids, or
+passwords — sweep the staged diff before every commit/push.

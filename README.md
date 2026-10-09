@@ -103,9 +103,9 @@ The API runs on `http://localhost:8080`, the web server on
 > Email sign-in note: in local development the verification code is
 > printed to the server console (look for `Registration code for ...`)
 > instead of being emailed — that is Serverpod's default dev behavior,
-> not a bug. Staging and production send real emails through the
-> Serverpod Cloud email service. Judges get a ready-made test account
-> in the submission's testing instructions, so no registration is needed.
+> not a bug. Register with any email address and copy the code from the
+> console. Staging and production send real emails through the
+> Serverpod Cloud email service.
 
 ```sh
 # 3. Start the Mac builder worker (separate terminal, on a Mac with
@@ -166,10 +166,10 @@ voice comments → new build → export:
 - [x] Full-stack app with Serverpod as the backend, created new during
       the submission period.
 - [x] Public code repository: https://github.com/Hack-a-tons/apploop
-- [ ] Text description (features, functionality, how built) — this file.
-- [ ] Build & run instructions — see above.
+- [x] Text description (features, functionality, how built) — this file.
+- [x] Build & run instructions — see above.
 - [ ] Demonstration video (< 2 min, public YouTube/Vimeo link) — see above.
-- [ ] AI tooling disclosed — see "How it was built".
+- [x] AI tooling disclosed — see "How it was built".
 - [ ] TestFlight testing access for judges (invited Apple ID in the
       submission's testing instructions).
 
