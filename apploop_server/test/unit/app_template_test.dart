@@ -1,7 +1,7 @@
 import 'package:test/test.dart';
 
-import 'package:apploop_server/src/build/app_template.dart';
-import 'package:apploop_server/src/build/wish_module.dart';
+import 'package:apploop_server/src/builds/app_template.dart';
+import 'package:apploop_server/src/builds/wish_module.dart';
 
 void main() {
   group('AppTemplate.escapeDartString', () {

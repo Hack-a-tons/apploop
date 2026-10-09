@@ -19,7 +19,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:apploop_client/apploop_client.dart';
-import 'package:apploop_server/src/build/app_generator.dart';
+import 'package:apploop_server/src/builds/app_generator.dart';
 import 'package:apploop_server/src/store/asc_api.dart';
 
 const _pollInterval = Duration(seconds: 10);

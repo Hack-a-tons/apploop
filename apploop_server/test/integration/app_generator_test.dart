@@ -2,8 +2,8 @@ import 'dart:io';
 
 import 'package:test/test.dart';
 
-import 'package:apploop_server/src/build/app_generator.dart';
-import 'package:apploop_server/src/build/wish_module.dart';
+import 'package:apploop_server/src/builds/app_generator.dart';
+import 'package:apploop_server/src/builds/wish_module.dart';
 
 /// End-to-end generation with the real Flutter SDK. Uses the counter
 /// module so no extra `pub get` (network) is needed.
